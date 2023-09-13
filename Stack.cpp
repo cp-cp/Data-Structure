@@ -2,11 +2,13 @@
 int main()
 {
     Stack<int> s;
-    s.push(10);
-    s.push(20);
-    s.push(30);
-    s.display();
-    s.pop();
-    s.display();
-    printf("%d",s.top());
+    printf("%d\n",s.Empty());
+    s.Push(10);
+    s.Push(20);
+    s.Push(30);
+    s.Display();
+    s.Pop();
+    s.Display();
+    printf("%d\n",s.Empty());
+    printf("%d",s.Top());
 }

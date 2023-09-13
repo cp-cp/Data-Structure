@@ -23,8 +23,8 @@ template <class T> class Linked_List
         int Display()const;//返回列表长度
         void Insert(int index, T x);
         void Delete(int index);
-        int Length();
-        T Show(int index);
+        int Length()const;
+        T Show(int index)const;
 };
 template<class T>
 Linked_List<T>::Linked_List(T A[],int n)
@@ -87,7 +87,7 @@ void Linked_List<T>::Insert(int index,T x)
     }
 }
 template <class T>
-T Linked_List<T>::Show(int index)
+T Linked_List<T>::Show(int index)const
 {
     Node* p=head;
     if(index < 0 || index >= Length())
@@ -130,7 +130,7 @@ void Linked_List<T>::Delete(int index)
     }
 }
 template <class T>
-int Linked_List<T>::Length()
+int Linked_List<T>::Length() const
 {
     int length=0;
     Node* p=head;
