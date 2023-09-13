@@ -1,9 +1,9 @@
 #include<iostream>
 
 template <class T> class Linked_List
-{
+{  
     private:
-        template <class T> class Node
+        class Node
         {
             public:
                 T data;
@@ -12,8 +12,8 @@ template <class T> class Linked_List
                 {
                     this->data=x;
                 }
-        };
-        Node<T>* head;
+        };  
+        Node* head;
     public:
         Linked_List(){
             head = NULL;
@@ -24,18 +24,19 @@ template <class T> class Linked_List
         void Insert(int index, T x);
         void Delete(int index);
         int Length();
+        T Show(int index);
 };
 template<class T>
 Linked_List<T>::Linked_List(T A[],int n)
 {
-    Node<T>* last,*t;
-    head=new Node<T>(A[0]);
+    Node* last,*t;
+    head=new Node(A[0]);
     // head->data=A[0];
     // head->next=NULL;
     last=head;
     for(int i=1;i<n;i++)
     {
-        t=new Node<T>(A[i]);
+        t=new Node(A[i]);
         // t->data=A[i];
         // t->next=NULL;
         last->next=t;
@@ -44,7 +45,7 @@ Linked_List<T>::Linked_List(T A[],int n)
 }
 template<class T>
 Linked_List<T>::~Linked_List(){
-    Node<T>* p = head;
+    Node* p = head;
     while(head){
         head = head->next;
         delete p;
@@ -55,7 +56,7 @@ template <class T>
 int Linked_List<T>::Display()const
 {
     int lenth;
-    Node<T>* p=head;
+    Node* p=head;
     while(p)
     {
         lenth++;
@@ -68,8 +69,8 @@ int Linked_List<T>::Display()const
 template <class T>
 void Linked_List<T>::Insert(int index,T x)
 {
-    Node<T>* t=new Node<T>(x);
-    Node<T>* p=head;
+    Node* t=new Node(x);
+    Node* p=head;
     if(index < 0 || index > Length())
         return;
     if(index==0)
@@ -86,19 +87,40 @@ void Linked_List<T>::Insert(int index,T x)
     }
 }
 template <class T>
+T Linked_List<T>::Show(int index)
+{
+    Node* p=head;
+    if(index < 0 || index >= Length())
+        return NULL;
+    if(index==0)
+    {
+        // t->next=head;
+        return head->data;
+        // head=t;
+    }
+    else
+    {
+        for(int i=0; i<index-1; i++)
+            p = p->next;
+        return p->next->data;
+        // t->next = p->next;
+        // p->next = t;
+    }
+}
+template <class T>
 void Linked_List<T>::Delete(int index)
 {
-    Node<T>* p=head;
-    Node<T>* q=head;
-    if(index <= 0 || index > Length())
+    Node* p=head;
+    Node* q=head;
+    if(index < 0 || index >= Length())
         return;
-    if(index==1)
+    if(index==0)
     {
         head=head->next;
     }
     else
     {
-        for(int i=0; i<index-1; i++)
+        for(int i=0; i<index; i++)
         {
             q = p;
             p = p->next;
@@ -111,7 +133,7 @@ template <class T>
 int Linked_List<T>::Length()
 {
     int length=0;
-    Node<T>* p=head;
+    Node* p=head;
     while(p)
     {
         p=p->next;
