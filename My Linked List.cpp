@@ -131,5 +131,8 @@ int main()
     l.Insert(3,a);//插入一个元素
     l.Insert(3,a);//插入一个元素
     l.Insert(3,a);//插入一个元素
+    l.Delete(2);//删除第三个元素
+    l.Display();
+    l.Delete(6);//删除第三个元素
     l.Display();
 }

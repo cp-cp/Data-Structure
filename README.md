@@ -9,4 +9,4 @@ This is a repository for my Data Structure homework.
 
 * [x] Linked List
 * [x] Stack
-* [ ] Queue
+* [ ] Queue<T>

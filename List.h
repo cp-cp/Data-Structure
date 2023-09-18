@@ -8,15 +8,18 @@ template <class T> class Linked_List
             public:
                 T data;
                 Node* next=NULL;
+                // Node* prev=NULL;
                 Node(T x)
                 {
                     this->data=x;
                 }
         };  
         Node* head;
+        // Node* tail;
     public:
         Linked_List(){
             head = NULL;
+            // tail = NULL;
         };
         Linked_List(T A[],int n);
         ~Linked_List();
@@ -31,17 +34,15 @@ Linked_List<T>::Linked_List(T A[],int n)
 {
     Node* last,*t;
     head=new Node(A[0]);
-    // head->data=A[0];
-    // head->next=NULL;
     last=head;
     for(int i=1;i<n;i++)
     {
         t=new Node(A[i]);
-        // t->data=A[i];
-        // t->next=NULL;
+        // t->prev=last;
         last->next=t;
         last=t;
     }
+    // tail=last;
 }
 template<class T>
 Linked_List<T>::~Linked_List(){
@@ -83,6 +84,7 @@ void Linked_List<T>::Insert(int index,T x)
         for(int i=0; i<index-1; i++)
             p = p->next;
         t->next = p->next;
+        // t->prev=p;
         p->next = t;
     }
 }
@@ -112,6 +114,7 @@ void Linked_List<T>::Delete(int index)
 {
     Node* p=head;
     Node* q=head;
+    // printf("%d %d\n",index,Length());
     if(index < 0 || index >= Length())
         return;
     if(index==0)
@@ -126,6 +129,7 @@ void Linked_List<T>::Delete(int index)
             p = p->next;
         }
         q->next = p->next;
+        // p->next->prev=q;
         delete p;
     }
 }
