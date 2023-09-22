@@ -10,7 +10,7 @@ class Stack
         }
         void Push(T t);
         void Pop();
-        // int length();
+        int Length();
         bool Empty()const;
         T Top()const;
         int Display()const;
@@ -20,6 +20,11 @@ void Stack<T>::Push(T t)
 {
     //this.
     list.Insert(0,t);
+}
+template<class T>
+int Stack<T>::Length()
+{
+    return list.Length();
 }
 template<class T>
 bool Stack<T>::Empty()const
