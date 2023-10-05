@@ -1,55 +1,24 @@
 #include<iostream>
 #include<cstring>
-#include<vector>
-#include<algorithm>
-#include<queue>
 #include<stack>
-using std::vector;
 using std::string;
-using std::cin;
-using std::cout;
 using std::stack;
-class Node
+class Threaded_Node
 {
     public:
-        int id;
-        Node* left=NULL;
-        Node* right=NULL;
-        Node* father;
-        Node(int id){this->id=id;}
+        Threaded_Node* left=NULL;
+        bool if_left=false;        
+        Threaded_Node* right=NULL;
+        bool if_right=false;
+        int data;//ä»¥æ•´åž‹ä¸ºä¾‹
+        Threaded_Node(int num):data(num){}
+
 };
-void post_traverse(Node* f)
-{
-    // cout<<f->id<<" "<<f->son.size()<<std::endl;
-    if(f)
-    {
-        post_traverse(f->left);
-        post_traverse(f->right);
-        cout<<f->id<<" ";
-    }
-}
-void pre_traverse(Node* f)
-{
-    if(f)
-    {
-        cout<<f->id<<" ";
-        pre_traverse(f->left);
-        pre_traverse(f->right);
-    }
-}
-void deep_traverse(Node* f)
-{
-    std::queue<Node*>q;
-    q.push(f);
-    while(!q.empty())
-    {
-        Node *p=q.front();
-        q.pop();
-        cout<<p->id<<" ";
-        if(p->left)
-            q.push(p->left);
-        if(p->right)
-            q.push(p->right);
+void printTree(Threaded_Node* root) {
+    if (root) {
+        printTree(root->left);
+        std::cout << root->data << " ";
+        printTree(root->right);
     }
 }
 int main()
@@ -58,9 +27,9 @@ int main()
     std::cin>>s;
     int len=s.size();
     int num=0;
-    Node* head=NULL;
-    Node* p=NULL;
-    stack<Node*> nodeStack;
+    Threaded_Node* head=NULL;
+    Threaded_Node* p=NULL;
+    stack<Threaded_Node*> nodeStack;
     for(int i=0;i<len;i++)
     {
         if(s[i]<='9'&&s[i]>='0')
@@ -73,20 +42,22 @@ int main()
             {
                 if(num)
                 {
-                    Node* a=new Node(num);
+                    Threaded_Node* a=new Threaded_Node(num);
                     if(p==NULL)
                     {
                         head=a;
                     }
                     else
                     {
-                        if(p->left)
+                        if(p->if_left)
                         {
                             p->right=a;
+                            p->if_right=true;
                         }
                         else
                         {
                             p->left=a;
+                            p->if_left=true;
                         }
                     }
                     nodeStack.push(a);
@@ -98,8 +69,9 @@ int main()
             {
                 if(num)
                 {
-                    Node* a=new Node(num);
+                    Threaded_Node* a=new Threaded_Node(num);
                     p->left=a;
+                    p->if_left=true;
                     num=0;
                 }
             }else if(s[i]==')')
@@ -108,9 +80,10 @@ int main()
                 {
                     if(num)
                     {
-                        Node* a=new Node(num);
+                        Threaded_Node* a=new Threaded_Node(num);
                         p=nodeStack.top();
                         p->right=a;
+                        p->if_right=true;
                         num=0;
                     }
                     nodeStack.pop();
@@ -122,11 +95,5 @@ int main()
             }
         }
     }
-    cout<<"ºóÐò±éÀú: ";
-    post_traverse(p);//ºóÐò±éÀú
-    cout<<"\n";
-    cout<<"ÏÈÐò±éÀú: ";
-    pre_traverse(p);//ÏÈÐò±éÀú
-    cout<<"\n²ã´Î±éÀú: ";
-    deep_traverse(p);
+    printTree(head);
 }
