@@ -10,6 +10,54 @@ using std::queue;
 using std::string;
 /*
     输入一段文字(仅包含26个英文字母)，统计出数字并且获取哈夫曼编码。
+INPUT:
+in computer science and information theory, a huffman code is a particular type of optimal prefix code that is commonly used for lossless data compression. the process of finding or using such a code is huffman coding, an algorithm developed by david a. huffman while he was a sc.d. student at mit, and published in the 1952 paper "a method for the construction of minimum-redundancy codes".
+
+OUTPUT:
+char :"a";times:25
+char :"b";times:2
+char :"c";times:17
+char :"d";times:20
+char :"e";times:27
+char :"f";times:14
+char :"g";times:4
+char :"h";times:14
+char :"i";times:24
+char :"l";times:9
+char :"m";times:15
+char :"n";times:23
+char :"o";times:27
+char :"p";times:11
+char :"r";times:15
+char :"s";times:21
+char :"t";times:20
+char :"u";times:13
+char :"v";times:2
+char :"w";times:2
+char :"x";times:1
+char :"y";times:5
+word: u;times 13;code: 0000
+word: f;times 14;code: 0001
+word: h;times 14;code: 0010
+word: m;times 15;code: 0011
+word: r;times 15;code: 0100
+word: c;times 17;code: 0110
+word: t;times 20;code: 0111
+word: d;times 20;code: 1001
+word: s;times 21;code: 1010
+word: n;times 23;code: 1011
+word: i;times 24;code: 1100
+word: a;times 25;code: 1101
+word: e;times 27;code: 1110
+word: o;times 27;code: 1111
+word: l;times 9;code: 01011
+word: p;times 11;code: 10001
+word: g;times 4;code: 010101
+word: y;times 5;code: 100001
+word: x;times 1;code: 0101000
+word: b;times 2;code: 0101001
+word: w;times 2;code: 1000000
+word: v;times 2;code: 1000001
 */
 class Huffman
 {
@@ -124,7 +172,8 @@ void Huffman::Print()
 int main()
 {
     string s;
-    std::cin>>s;
+    // std::cin>>s;
+    getline(std::cin,s);
     map<char, int> words;
     for(char c='a';c<='z';c++)
     {
