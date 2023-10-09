@@ -146,3 +146,28 @@ Q:(n-1)个盘子 2->3
 
 ### 哈夫曼树
 
+
+
+## 堆Heap
+
+形式上数组，意义上树。
+$$
+left child=2i+1\\
+
+right child=2i+2\\
+
+father=\lfloor\frac{i-1}{2}\rfloor\\
+$$
+
+
+删除：去除根节点，用最后一个元素代替根节点，往下交换传递，变为正确的顺序。
+
+添加：放在底部，一步步向上传播。
+
+N个节点的树，以上时间复杂度为O(NlogN)  
+
+
+
+### 斐波那契堆
+
+[算法 - 优先队列 - 斐波那契堆 | Earth Guardian (redspider110.github.io)](https://redspider110.github.io/2018/09/25/0105-algorithms-fibonacci-heap/)
