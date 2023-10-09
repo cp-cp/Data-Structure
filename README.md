@@ -16,3 +16,9 @@ This is a repository for my Data Structure homework.
 * [x] Tower of Hanoi with binary method
 * [x] ExGCD algorithm
 * [x] Next_permutation
+
+## Lets' Tree(week 4)
+
+* [x] pre-traverse + mid-traverse $\Rightarrow$ tree structure
+* [x] tree structure $\Rightarrow$ pre、mid and post traverse
+* [x] Huffman Tree
