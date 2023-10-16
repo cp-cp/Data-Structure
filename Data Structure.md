@@ -171,3 +171,18 @@ N个节点的树，以上时间复杂度为O(NlogN)
 ### 斐波那契堆
 
 [算法 - 优先队列 - 斐波那契堆 | Earth Guardian (redspider110.github.io)](https://redspider110.github.io/2018/09/25/0105-algorithms-fibonacci-heap/)
+
+
+
+
+
+### 二叉搜索树
+
+左小右大
+
+动态有序
+
+
+
+
+
