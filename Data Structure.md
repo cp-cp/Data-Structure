@@ -172,11 +172,7 @@ N个节点的树，以上时间复杂度为O(NlogN)
 
 [算法 - 优先队列 - 斐波那契堆 | Earth Guardian (redspider110.github.io)](https://redspider110.github.io/2018/09/25/0105-algorithms-fibonacci-heap/)
 
-
-
-
-
-### 二叉搜索树
+## 二叉搜索树
 
 左小右大
 
@@ -184,5 +180,40 @@ N个节点的树，以上时间复杂度为O(NlogN)
 
 
 
+AVL树
+
+B树
+
+### 红黑树
+
+#### 性质约定
+
+1. 节点是红色或黑色。
+2. **根是黑色**。
+3. 所有**叶子都是黑色**（叶子是**NIL**节点）。
+4. **不存在**两个相邻的红色节点
+5. 从任一节点到其每个叶子的所有简单路径都包含**相同数目的黑色节点。**
 
 
+
+![An example of a red-black tree](https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Red-black_tree_example.svg/450px-Red-black_tree_example.svg.png)
+
+
+
+#### 动态调整
+
+$Case\_1$
+
+![情形3示意图](https://upload.wikimedia.org/wikipedia/commons/c/c8/Red-black_tree_insert_case_3.png)
+
+直接将父亲与叔叔染成黑色。
+
+$Case\_2$
+
+![情形4示意图](https://upload.wikimedia.org/wikipedia/commons/5/56/Red-black_tree_insert_case_4.png)
+
+先进行左旋
+
+![情形5示意图](https://upload.wikimedia.org/wikipedia/commons/6/66/Red-black_tree_insert_case_5.png)
+
+再进行右旋
