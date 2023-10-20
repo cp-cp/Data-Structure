@@ -23,7 +23,12 @@ This is a repository for my Data Structure homework.
 * [x] tree structure $\Rightarrow$ pre、mid and post traverse
 * [x] Huffman Tree
 
-## How About Fibonacci?(week 4)
+## How About Fibonacci?(week 5)
 
 * [x] Fibonacci Heap
 * [x] ABC Problem
+
+## Can AVL Play Magic Cube?
+
+* [x] AVL Tree
+* [ ] Cube Problem
