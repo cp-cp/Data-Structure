@@ -54,6 +54,7 @@ class Cube
     void B();
     void U();
     void D();
+    void Open_Show();
     void Show(char side){
         printf("Side %c:\n",side);
         for(int i=0;i<3;i++)
@@ -65,34 +66,34 @@ class Cube
     }
     Cube(){
         char (*Up_Side)[3] = new char[3][3]{
-            {'1', 'U', '2'},
             {'U', 'U', 'U'},
-            {'3', 'U', '4'}
+            {'U', 'U', 'U'},
+            {'U', 'U', 'U'}
         };
         char (*Down_Side)[3] = new char[3][3]{
-            {'1', 'D', '2'},
             {'D', 'D', 'D'},
-            {'3', 'D', '4'}
+            {'D', 'D', 'D'},
+            {'D', 'D', 'D'}
         };
         char (*Front_Side)[3] = new char[3][3]{
-            {'1', 'F', '2'},
             {'F', 'F', 'F'},
-            {'3', 'F', '4'}
+            {'F', 'F', 'F'},
+            {'F', 'F', 'F'}
         };
         char (*Back_Side)[3] = new char[3][3]{
-            {'1', 'B', '2'},
             {'B', 'B', 'B'},
-            {'3', 'B', '4'}
+            {'B', 'B', 'B'},
+            {'B', 'B', 'B'}
         };
         char (*Left_Side)[3] = new char[3][3]{
-            {'1', 'L', '2'},
             {'L', 'L', 'L'},
-            {'3', 'L', '4'}
+            {'L', 'L', 'L'},
+            {'L', 'L', 'L'}
         };
         char (*Right_Side)[3] = new char[3][3]{
-            {'1', 'R', '2'},
             {'R', 'R', 'R'},
-            {'3', 'R', '4'}
+            {'R', 'R', 'R'},
+            {'R', 'R', 'R'}
         };
         this->Polyhedral['U']=Up_Side;
         this->Polyhedral['D']=Down_Side;
@@ -100,13 +101,6 @@ class Cube
         this->Polyhedral['B']=Back_Side;
         this->Polyhedral['L']=Left_Side;
         this->Polyhedral['R']=Right_Side;
-        
-        for(int i=0;i<3;i++)
-        {
-            for(int j=0;j<3;j++)
-                std::cout<<this->Polyhedral['L'][i][j]<<' ';
-            std::cout<<std::endl;
-        }
     }
 };
 void Cube::L()
@@ -295,21 +289,58 @@ void Cube::D()
             Polyhedral['L'][2][i]=temp[i];//R->B
     }
 }
+void Cube::Open_Show()
+{
+    for(int j=0;j<3;j++)
+    {
+        for(int i=0;i<3;i++)
+            std::cout<<' '<<" ";
+        for(int i=0;i<3;i++)
+            std::cout<<this->Polyhedral['U'][j][i]<<" ";
+        std::cout<<"\n";
+    }
+    for(int j=0;j<3;j++)
+    {
+        for(int i=0;i<3;i++)
+            std::cout<<this->Polyhedral['L'][j][i]<<" ";
+        for(int i=0;i<3;i++)
+            std::cout<<this->Polyhedral['F'][j][i]<<" ";
+        for(int i=0;i<3;i++)
+            std::cout<<this->Polyhedral['R'][j][i]<<" "; 
+        for(int i=0;i<3;i++)
+            std::cout<<this->Polyhedral['B'][j][i]<<" ";        
+        std::cout<<"\n";
+    }
+    for(int j=0;j<3;j++)
+    {
+        for(int i=0;i<3;i++)
+            std::cout<<' '<<" ";
+        for(int i=0;i<3;i++)
+            std::cout<<this->Polyhedral['D'][2-j][2-i]<<" ";
+        std::cout<<"\n";
+    }
+}
 int main()
 {
     Cube* cube=new Cube();
     // cube->L();//FIX
     // cube->R();//FIX
-    // cube->F();//FIX
+    cube->F();//FIX
+    cube->R();//FIX
+    cube->R();//FIX
+    cube->U();//FIX
+    cube->U();//FIX
+    cube->U();//FIX
     // cube->B();//FIX
     // cube->U();
     // cube->D();
-    cube->Show('U');
-    cube->Show('F');
-    cube->Show('L');
-    cube->Show('R');
-    cube->Show('D');
-    cube->Show('B');
+    // cube->Show('U');
+    // cube->Show('F');
+    // cube->Show('L');
+    // cube->Show('R');
+    // cube->Show('D');
+    // cube->Show('B');
+    cube->Open_Show();
     // for(int i=0;i<3;i++)
     // {
     //     for(int j=0;j<3;j++)
