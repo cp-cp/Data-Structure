@@ -1,9 +1,9 @@
 #include"Cube.h"
 /*
 如何复原魔方？
-首先复原底面！
+底面十字
 */
-void fix_bottom(Cube* cube)
+void fix_bottom_cross(Cube* cube)
 {
     map<int,char>map_color_tmp={{0,'L'},{2,'R'},{3,'F'},{1,'B'}};
     for(int i=0;i<4;i++)
@@ -60,14 +60,6 @@ void fix_bottom(Cube* cube)
         }
         while(egdes.first!='D'&&egdes.second!='D')
         {
-            // if(egdes.first==NULL)
-            // {
-            //     cube->Open_Show();
-            //     // std::cout<<tmp_color<<std::endl;
-            //     std::pair<char,char>egdes2=cube->Find_Color('B','D');
-            //     // std::cout<<"notice!!!!!!:    "<<egdes2.first<<" "<<egdes2.second<<std::endl;
-            // }
-            // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
             cube->performSingleMove(tmp_color);
             egdes=cube->Find_Color(tmp_color,'D');
         }
@@ -79,7 +71,7 @@ void fix_bottom(Cube* cube)
             cube->performSingleMove(tmp_color);
             cube->performSingleMove(tmp_color);
             char tmp_color_right=map_color_tmp[(i+1)%4];
-            std::cout<<"tmp_color_right:"<<tmp_color_right<<std::endl;
+            // std::cout<<"tmp_color_right:"<<tmp_color_right<<std::endl;
             cube->performSingleMove(tmp_color_right);
             cube->performSingleMove(tmp_color);
             cube->performSingleMove(tmp_color);
@@ -91,14 +83,111 @@ void fix_bottom(Cube* cube)
         cube->Open_Show();
     }
 }
+void fix_bottom_total(Cube* cube)
+{
+    map<int,char>map_color_tmp={{0,'L'},{1,'B'},{2,'R'},{3,'F'}};
+    for(int i=0;i<4;i++)//每次处理tmp_color与tmp_color_lf
+    {
+        char tmp_color=map_color_tmp[i];
+        char tmp_color_lf=map_color_tmp[(1+i)%4];
+        char tmp_color_op=map_color_tmp[(2+i)%4];
+        char tmp_color_rt=map_color_tmp[(3+i)%4];
+        std::tuple<char,char,char>sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
+        char col_1=std::get<0>(sharps);
+        char col_2=std::get<1>(sharps);
+        char col_3=std::get<2>(sharps);
+        std::cout<<tmp_color<<"&"<<tmp_color_lf<<"&D:"<<std::endl;
+        // std::cout<<std::get<0>(sharps)<<" "<<std::get<1>(sharps)<<" "<<std::get<2>(sharps)<<std::endl;
+        if((col_1==tmp_color&&col_2==tmp_color_lf)||(col_2==tmp_color&&col_3==tmp_color_lf)||(col_3==tmp_color&&col_1==tmp_color_lf))//位置正确
+        {
+            ;
+        }
+        else
+        {
+            if(col_1=='D'||col_2=='D'||col_3=='D')//如果说在底面
+            {
+                char tmp=col_1;
+                if(tmp=='D')tmp=col_2;
+                cube->performSingleMove(tmp);
+                cube->performSingleMove('U');
+                cube->performSingleMove(tmp);
+                cube->performSingleMove(tmp);
+                cube->performSingleMove(tmp);
+                sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
+                col_1=std::get<0>(sharps);
+                col_2=std::get<1>(sharps);
+                col_3=std::get<2>(sharps);
+            }
+            while((col_1!=tmp_color_lf||col_2!=tmp_color)&&(col_2!=tmp_color_lf||col_3!=tmp_color)&&(col_3!=tmp_color_lf||col_1!=tmp_color))//变为逆序
+            {
+                cube->performSingleMove('U');
+                sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
+                col_1=std::get<0>(sharps);
+                col_2=std::get<1>(sharps);
+                col_3=std::get<2>(sharps);
+            }
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
+            col_1=std::get<0>(sharps);
+            col_2=std::get<1>(sharps);
+            col_3=std::get<2>(sharps);
+        }
+        // std::cout<<"before: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
+        while(col_1=='D'||col_2=='D')//变为顺序
+        {
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            // cube->performSingleMove(tmp_color_lf);
+            // cube->performSingleMove(tmp_color_lf);
+            // cube->performSingleMove(tmp_color_lf);
+            // cube->performSingleMove('U');
+            // cube->performSingleMove('U');
+            // cube->performSingleMove('U');
+            // cube->performSingleMove(tmp_color_lf);
+            // cube->performSingleMove(tmp_color_lf);
+            // cube->performSingleMove(tmp_color_lf);
+            sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
+            col_1=std::get<0>(sharps);
+            col_2=std::get<1>(sharps);
+            col_3=std::get<2>(sharps);
+            std::cout<<"process: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
+        }
+        sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
+        col_1=std::get<0>(sharps);
+        col_2=std::get<1>(sharps);
+        col_3=std::get<2>(sharps);
+        std::cout<<"targer: "<<tmp_color<<" "<<tmp_color_lf<<" "<<'D'<<std::endl;
+        std::cout<<"final: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
+    }
+}
 int main()
 {
     Cube* cube=new Cube();
     string moves="D2 L' F' L2 U2 B2 D2 B U2 L2 D2 R2 B' L' D L2 D2 F2 U' F2";
     cube->performMoves(moves);
     cube->Open_Show();
-    fix_bottom(cube);
-    // cube->Open_Show();
+    fix_bottom_cross(cube);
+    // std::tuple<char,char,char>sharps=cube->Find_Color_Sharp('D','L','F');
+    // std::cout<<std::get<0>(sharps)<<" "<<std::get<1>(sharps)<<" "<<std::get<2>(sharps)<<std::endl;
+    // sharps=cube->Find_Color_Sharp('L','D','F');
+    // std::cout<<std::get<0>(sharps)<<" "<<std::get<1>(sharps)<<" "<<std::get<2>(sharps)<<std::endl;
+    fix_bottom_total(cube);
+    cube->Open_Show();
     // std::pair<char,char>egdes=cube->Find_Color('R','F');
     // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
 }

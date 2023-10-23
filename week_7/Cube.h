@@ -2,6 +2,7 @@
 #include<map>
 #include <sstream>
 #include<string>
+#include<tuple>
 using std::map;
 using std::string;
 /*
@@ -120,6 +121,7 @@ class Cube
     void Open_Show();
     void print(char c);
     std::pair<char,char> Find_Color(char col_1,char col_2);
+    std::tuple<char,char,char> Find_Color_Sharp(char col_1,char col_2,char col_3);
     std::pair<char,char> Get_Edge(char eg_1,char eg_2);
     void Show(char side){
         printf("Side %c:\n",side);
@@ -169,6 +171,10 @@ class Cube
         this->Polyhedral['R']=Right_Side;
     }
 };
+template <typename T1, typename T2>
+std::pair<T1, T2> operator+(const std::pair<T1, T2>& lhs, const std::pair<T1, T2>& rhs) {
+    return std::make_pair(lhs.first + rhs.first, lhs.second + rhs.second);
+}
 void Cube::performMoves(const std::string &moves) {
     std::istringstream iss(moves);
     std::string move;
@@ -491,6 +497,30 @@ std::pair<char,char> Cube::Find_Color(char col_1,char col_2)
         }
     }
     return result;
+}
+std::tuple<char,char,char> Cube::Find_Color_Sharp(char col_1,char col_2,char col_3)
+{
+    std::tuple<char,char,char> result;
+    for(int i=0;i<6;i++)
+    {
+        for(int j=0;j<6;j++)
+        {
+            for(int k=0;k<6;k++)
+            {
+                if(face_map[id_face[i]].count(id_face[j])>0 && face_map[id_face[j]].count(id_face[k])>0 && face_map[id_face[k]].count(id_face[i])>0)
+                {
+                    std::pair<int,int>bias_i=face_map[id_face[i]][id_face[j]]+face_map[id_face[i]][id_face[k]];
+                    std::pair<int,int>bias_j=face_map[id_face[j]][id_face[k]]+face_map[id_face[j]][id_face[i]];
+                    std::pair<int,int>bias_k=face_map[id_face[k]][id_face[i]]+face_map[id_face[k]][id_face[j]];
+                    if(Polyhedral[id_face[i]][1+bias_i.first][1+bias_i.second]==col_1&&Polyhedral[id_face[j]][1+bias_j.first][1+bias_j.second]==col_2&&Polyhedral[id_face[k]][1+bias_k.first][1+bias_k.second]==col_3)
+                    {
+                        result=std::make_tuple(id_face[i],id_face[j],id_face[k]);
+                        return result;
+                    }
+                } 
+            }
+        }
+    }
 }
 // int main()
 // {
