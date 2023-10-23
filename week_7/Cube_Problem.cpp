@@ -10,7 +10,7 @@ void fix_bottom_cross(Cube* cube)
     {
         char tmp_color=map_color_tmp[i];
         char tmp_color_op=map_color_tmp[(2+i)%4];
-        std::cout<<"tmp_color:"<<tmp_color<<std::endl;
+        // std::cout<<"tmp_color:"<<tmp_color<<std::endl;
         // std::cout<<"tmp_color_op:"<<tmp_color_op<<std::endl;
         std::pair<char,char>egdes=cube->Find_Color(tmp_color,'D');
         // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
@@ -80,7 +80,7 @@ void fix_bottom_cross(Cube* cube)
             cube->performSingleMove(tmp_color_right);
             cube->performSingleMove(tmp_color_right);
         }
-        cube->Open_Show();
+        // cube->Open_Show();
     }
 }
 void fix_bottom_total(Cube* cube)
@@ -96,7 +96,7 @@ void fix_bottom_total(Cube* cube)
         char col_1=std::get<0>(sharps);
         char col_2=std::get<1>(sharps);
         char col_3=std::get<2>(sharps);
-        std::cout<<tmp_color<<"&"<<tmp_color_lf<<"&D:"<<std::endl;
+        // std::cout<<tmp_color<<"&"<<tmp_color_lf<<"&D:"<<std::endl;
         // std::cout<<std::get<0>(sharps)<<" "<<std::get<1>(sharps)<<" "<<std::get<2>(sharps)<<std::endl;
         if((col_1==tmp_color&&col_2==tmp_color_lf)||(col_2==tmp_color&&col_3==tmp_color_lf)||(col_3==tmp_color&&col_1==tmp_color_lf))//位置正确
         {
@@ -165,14 +165,117 @@ void fix_bottom_total(Cube* cube)
             col_1=std::get<0>(sharps);
             col_2=std::get<1>(sharps);
             col_3=std::get<2>(sharps);
-            std::cout<<"process: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
+            // std::cout<<"process: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
         }
         sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
         col_1=std::get<0>(sharps);
         col_2=std::get<1>(sharps);
         col_3=std::get<2>(sharps);
-        std::cout<<"targer: "<<tmp_color<<" "<<tmp_color_lf<<" "<<'D'<<std::endl;
-        std::cout<<"final: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
+        // std::cout<<"targer: "<<tmp_color<<" "<<tmp_color_lf<<" "<<'D'<<std::endl;
+        // std::cout<<"final: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
+    }
+}
+void fix_middle(Cube* cube)
+{
+    map<int,char>map_color_tmp={{0,'L'},{2,'R'},{3,'F'},{1,'B'}};
+    map<char,int>map_id_tmp={{'L',0},{'R',2},{'F',3},{'B',1}};
+    for(int i=0;i<4;i++)
+    {
+        char tmp_color=map_color_tmp[i];
+        char tmp_color_lf=map_color_tmp[(1+i)%4];
+        std::cout<<"tmp_color:"<<tmp_color<<std::endl;
+        std::cout<<"tmp_color_lf:"<<tmp_color_lf<<std::endl;
+        std::pair<char,char>egdes=cube->Find_Color(tmp_color,tmp_color_lf);
+        std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
+        if((egdes.first!=tmp_color||egdes.second!=tmp_color_lf)&&(egdes.first!=tmp_color_lf||egdes.second!=tmp_color))
+        {
+            if(egdes.first!='U'&&egdes.second!='U')//到顶层
+            {
+                int max_id=map_id_tmp[egdes.first];
+                int min_id=map_id_tmp[egdes.second];
+                if(max_id<min_id)std::swap(max_id,min_id);
+                if(min_id==0&&max_id==3)std::swap(max_id,min_id);
+                // std::cout<<"right:"<<map_color_tmp[min_id]<<" left:"<<map_color_tmp[max_id]<<std::endl;
+                cube->performSingleMove(map_color_tmp[min_id]);
+                cube->performSingleMove('U');
+                cube->performSingleMove('U');
+                cube->performSingleMove('U');
+                cube->performSingleMove(map_color_tmp[min_id]);
+                cube->performSingleMove(map_color_tmp[min_id]);
+                cube->performSingleMove(map_color_tmp[min_id]);
+                cube->performSingleMove('U');
+                cube->performSingleMove('U');
+                cube->performSingleMove('U');
+                cube->performSingleMove(map_color_tmp[max_id]);
+                cube->performSingleMove(map_color_tmp[max_id]);
+                cube->performSingleMove(map_color_tmp[max_id]);
+                cube->performSingleMove('U');
+                cube->performSingleMove(map_color_tmp[max_id]);
+                egdes=cube->Find_Color(tmp_color,tmp_color_lf);
+                // std::cout<<"why?"<<egdes.first<<" "<<egdes.second<<std::endl;
+            }
+            while(egdes.first!=tmp_color&&egdes.second!=tmp_color)//到底层
+            {
+                // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
+                cube->performSingleMove('U');
+                egdes=cube->Find_Color(tmp_color,tmp_color_lf);
+            }
+                // std::cout<<"fi "<<egdes.first<<" "<<egdes.second<<std::endl;
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            egdes=cube->Find_Color(tmp_color,tmp_color_lf);
+        }
+        if(egdes.first!=tmp_color&&egdes.second!=tmp_color_lf)
+        {
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color_lf);
+        }
+        cube->Open_Show();
     }
 }
 int main()
@@ -187,7 +290,9 @@ int main()
     // sharps=cube->Find_Color_Sharp('L','D','F');
     // std::cout<<std::get<0>(sharps)<<" "<<std::get<1>(sharps)<<" "<<std::get<2>(sharps)<<std::endl;
     fix_bottom_total(cube);
-    cube->Open_Show();
+    // cube->Open_Show();
+    fix_middle(cube);
+    // cube->Open_Show();
     // std::pair<char,char>egdes=cube->Find_Color('R','F');
     // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
 }
