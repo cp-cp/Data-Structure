@@ -1,7 +1,7 @@
 #include"Cube.h"
 /*
-如何复原魔方？
-底面十字
+打乱指令生成：https://cstimer.net/
+魔方与群论：https://cstimer.net/
 */
 void fix_bottom_cross(Cube* cube)
 {
@@ -80,7 +80,7 @@ void fix_bottom_cross(Cube* cube)
             cube->performSingleMove(tmp_color_right);
             cube->performSingleMove(tmp_color_right);
         }
-        cube->Open_Show();
+        // cube->Open_Show();
     }
 }
 void fix_bottom_total(Cube* cube)
@@ -97,8 +97,8 @@ void fix_bottom_total(Cube* cube)
         char col_1=std::get<0>(sharps);
         char col_2=std::get<1>(sharps);
         char col_3=std::get<2>(sharps);
-        std::cout<<tmp_color<<"&"<<tmp_color_lf<<"&D:"<<std::endl;
-        std::cout<<std::get<0>(sharps)<<" "<<std::get<1>(sharps)<<" "<<std::get<2>(sharps)<<std::endl;
+        // std::cout<<tmp_color<<"&"<<tmp_color_lf<<"&D:"<<std::endl;
+        // std::cout<<std::get<0>(sharps)<<" "<<std::get<1>(sharps)<<" "<<std::get<2>(sharps)<<std::endl;
         if((col_1==tmp_color&&col_2==tmp_color_lf)||(col_2==tmp_color&&col_3==tmp_color_lf)||(col_3==tmp_color&&col_1==tmp_color_lf))//位置正确
         {
             ;
@@ -112,7 +112,7 @@ void fix_bottom_total(Cube* cube)
                 if(tmp_2=='D')tmp_2=col_3;
                 if(map_id_tmp[tmp_1]<map_id_tmp[tmp_2])std::swap(tmp_1,tmp_2);
                 if(map_id_tmp[tmp_1]==3&&map_id_tmp[tmp_2]==0)std::swap(tmp_1,tmp_2);
-                std::cout<<"tmp_1:"<<tmp_1<<" tmp_2:"<<tmp_2<<std::endl;
+                // std::cout<<"tmp_1:"<<tmp_1<<" tmp_2:"<<tmp_2<<std::endl;
                 cube->performSingleMove(tmp_2);
                 cube->performSingleMove('U');
                 cube->performSingleMove(tmp_2);
@@ -125,7 +125,7 @@ void fix_bottom_total(Cube* cube)
             }
             while((col_1!=tmp_color_lf||col_2!=tmp_color)&&(col_2!=tmp_color_lf||col_3!=tmp_color)&&(col_3!=tmp_color_lf||col_1!=tmp_color))//变为逆序
             {
-                std::cout<<"before: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
+                // std::cout<<"before: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
                 cube->performSingleMove('U');
                 sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
                 col_1=std::get<0>(sharps);
@@ -142,7 +142,7 @@ void fix_bottom_total(Cube* cube)
             col_2=std::get<1>(sharps);
             col_3=std::get<2>(sharps);
         }
-        std::cout<<"before: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
+        // std::cout<<"before: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
         while(col_1=='D'||col_2=='D')//变为顺序
         {
             cube->performSingleMove(tmp_color);
@@ -179,7 +179,7 @@ void fix_bottom_total(Cube* cube)
         col_3=std::get<2>(sharps);
         // std::cout<<"targer: "<<tmp_color<<" "<<tmp_color_lf<<" "<<'D'<<std::endl;
         // std::cout<<"final: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
-        cube->Open_Show();
+        // cube->Open_Show();
     }
 }
 void fix_middle(Cube* cube)
@@ -190,10 +190,10 @@ void fix_middle(Cube* cube)
     {
         char tmp_color=map_color_tmp[i];
         char tmp_color_lf=map_color_tmp[(1+i)%4];
-        std::cout<<"tmp_color:"<<tmp_color<<std::endl;
-        std::cout<<"tmp_color_lf:"<<tmp_color_lf<<std::endl;
+        // std::cout<<"tmp_color:"<<tmp_color<<std::endl;
+        // std::cout<<"tmp_color_lf:"<<tmp_color_lf<<std::endl;
         std::pair<char,char>egdes=cube->Find_Color(tmp_color,tmp_color_lf);
-        std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
+        // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
         if((egdes.first!=tmp_color||egdes.second!=tmp_color_lf)&&(egdes.first!=tmp_color_lf||egdes.second!=tmp_color))
         {
             if(egdes.first!='U'&&egdes.second!='U')//到顶层
@@ -282,7 +282,7 @@ void fix_middle(Cube* cube)
             cube->performSingleMove('U');
             cube->performSingleMove(tmp_color_lf);
         }
-        cube->Open_Show();
+        // cube->Open_Show();
     }
 }
 void fix_upper_cross(Cube* cube)
@@ -297,7 +297,7 @@ void fix_upper_cross(Cube* cube)
             times++;
             flag+=i;
         }
-    std::cout<<times<<" "<<flag<<std::endl;
+    // std::cout<<times<<" "<<flag<<std::endl;
     if(times==1)
     {
         cube->performSingleMove('F');
@@ -320,7 +320,7 @@ void fix_upper_cross(Cube* cube)
             times++;
             flag+=i;
         }
-    std::cout<<times<<" "<<flag<<std::endl;
+    // std::cout<<times<<" "<<flag<<std::endl;
     if(times==2)
     {
         if(flag%2)
@@ -372,7 +372,7 @@ void fix_upper_cross(Cube* cube)
             cube->performSingleMove('L');
         }
     }
-    cube->Open_Show();
+    // cube->Open_Show();
     times=0,flag=0;
     char min_id;
     for(int i=0;i<4;i++)
@@ -397,7 +397,7 @@ void fix_upper_cross(Cube* cube)
                 times++,min_id=target_col;
         }
     }
-    std::cout<<" "<<times<<" "<<flag<<std::endl;
+    // std::cout<<" "<<times<<" "<<flag<<std::endl;
     if(times==2)
     {
         if(!(flag%2))
@@ -513,8 +513,8 @@ void fix_upper_total(Cube* cube)
         if((col_1==tmp_color&&col_2==tmp_color_lf)||(col_2==tmp_color&&col_3==tmp_color_lf)||(col_3==tmp_color&&col_1==tmp_color_lf))
             times++,flag=i;
     }
-    std::cout<<"hi:"<<times<<" "<<flag<<"\n";
-    cube->Open_Show();
+    // std::cout<<"hi:"<<times<<" "<<flag<<"\n";
+    // cube->Open_Show();
     if(times==1)
     {
         do
@@ -586,20 +586,31 @@ int main()
     // string moves="B2 L2 D F2 R2 B2 R2 U F2 D U2 R U F' R' F' D2 B' D2 U'";
     // string moves="B' L2 F' D2 B2 D2 U2 L2 B' U2 L' F2 R' B' D L2 D2 U' R U'";
     // string moves="B2 L2 B L B' L F2 D L2 U2 F B D2 R2 B R2 L2 D'";
-    cube->performMoves(moves);
+    std::cout<<"打乱前的魔方："<<std::endl;
     cube->Open_Show();
+    cube->performMoves(moves);
+    std::cout<<"被打乱的魔方："<<std::endl;
+    cube->Open_Show();
+    std::cout<<"步骤一：拼个底面十字"<<std::endl;
     fix_bottom_cross(cube);
+    cube->Open_Show();
     // std::tuple<char,char,char>sharps=cube->Find_Color_Sharp('D','L','F');
     // std::cout<<std::get<0>(sharps)<<" "<<std::get<1>(sharps)<<" "<<std::get<2>(sharps)<<std::endl;
     // sharps=cube->Find_Color_Sharp('L','D','F');
     // std::cout<<std::get<0>(sharps)<<" "<<std::get<1>(sharps)<<" "<<std::get<2>(sharps)<<std::endl;
+    std::cout<<"步骤二：拼完底面"<<std::endl;
     fix_bottom_total(cube);
     cube->Open_Show();
+    std::cout<<"步骤三：拼中间层"<<std::endl;
     fix_middle(cube);
+    cube->Open_Show();
+    std::cout<<"步骤四：拼顶面十字并对齐"<<std::endl;
     fix_upper_cross(cube);
     cube->Open_Show();
+    std::cout<<"步骤五：拼顶面"<<std::endl;
     fix_upper_total(cube);
     cube->Open_Show();
+    std::cout<<"步骤六：顶面棱角对齐"<<std::endl;
     fix_final(cube);
     cube->Open_Show();
     // std::pair<char,char>egdes=cube->Find_Color('R','F');
