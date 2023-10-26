@@ -158,15 +158,6 @@ void fix_bottom_total(Cube* cube)
             cube->performSingleMove(tmp_color);
             cube->performSingleMove(tmp_color);
             cube->performSingleMove(tmp_color);
-            // cube->performSingleMove(tmp_color_lf);
-            // cube->performSingleMove(tmp_color_lf);
-            // cube->performSingleMove(tmp_color_lf);
-            // cube->performSingleMove('U');
-            // cube->performSingleMove('U');
-            // cube->performSingleMove('U');
-            // cube->performSingleMove(tmp_color_lf);
-            // cube->performSingleMove(tmp_color_lf);
-            // cube->performSingleMove(tmp_color_lf);
             sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
             col_1=std::get<0>(sharps);
             col_2=std::get<1>(sharps);
@@ -321,6 +312,7 @@ void fix_upper_cross(Cube* cube)
             flag+=i;
         }
     // std::cout<<times<<" "<<flag<<std::endl;
+    cube->Open_Show();
     if(times==2)
     {
         if(flag%2)
@@ -371,8 +363,16 @@ void fix_upper_cross(Cube* cube)
             cube->performSingleMove('L');
             cube->performSingleMove('L');
         }
+        times=0,flag=0;
+        for(int i=0;i<4;i++)
+            if(cube->Polyhedral['U'][1+bias[i][0]][1+bias[i][1]]=='U')
+            {
+                times++;
+                flag+=i;
+            }
     }
-    // cube->Open_Show();
+    if(times!=4) return;//判断是否完成
+    cube->Open_Show();
     times=0,flag=0;
     char min_id;
     for(int i=0;i<4;i++)
@@ -613,6 +613,14 @@ int main()
     std::cout<<"步骤六：顶面棱角对齐"<<std::endl;
     fix_final(cube);
     cube->Open_Show();
+    if(cube->Check())
+    {
+        std::cout<<"魔方已被复原\n";
+    }
+    else
+    {
+        std::cout<<"魔方不可被复原\n";
+    }
     // std::pair<char,char>egdes=cube->Find_Color('R','F');
     // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
 }

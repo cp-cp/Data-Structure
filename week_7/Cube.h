@@ -118,7 +118,21 @@ class Cube
     void B();
     void U();
     void D();
+    //std::cout<<"步骤一：拼个底面十字"<<std::endl;
+    void fix_bottom_cross();
+    // std::cout<<"步骤二：拼完底面"<<std::endl;
+    void fix_bottom_total();
+    // std::cout<<"步骤三：拼中间层"<<std::endl;
+    void fix_middle();
+    // std::cout<<"步骤四：拼顶面十字并对齐"<<std::endl;
+    bool fix_upper_cross();
+    // std::cout<<"步骤五：拼顶面"<<std::endl;
+    void fix_upper_total();
+    // std::cout<<"步骤六：顶面棱角对齐"<<std::endl;
+    void fix_final();
     void Open_Show();
+    bool Check();
+    void Reset();
     void print(char c);
     std::pair<char,char> Find_Color(char col_1,char col_2);
     std::tuple<char,char,char> Find_Color_Sharp(char col_1,char col_2,char col_3);
@@ -174,6 +188,34 @@ class Cube
 template <typename T1, typename T2>
 std::pair<T1, T2> operator+(const std::pair<T1, T2>& lhs, const std::pair<T1, T2>& rhs) {
     return std::make_pair(lhs.first + rhs.first, lhs.second + rhs.second);
+}
+void Cube::Reset()
+{
+    for(int i=0;i<6;i++)
+    {
+        for(int j=0;j<3;j++)
+        {
+            for(int k=0;k<3;k++)
+            {
+                Polyhedral[id_face[i]][j][k]=id_face[i];
+            }
+        }
+    }
+}
+bool Cube::Check()
+{
+    for(int i=0;i<6;i++)
+    {
+        for(int j=0;j<3;j++)
+        {
+            for(int k=0;k<3;k++)
+            {
+                if(Polyhedral[id_face[i]][j][k]!=id_face[i])
+                    return false;
+            }
+        }
+    }
+    return true;
 }
 void Cube::performMoves(const std::string &moves) {
     std::istringstream iss(moves);
@@ -431,9 +473,8 @@ void Cube::print(char c) {
         default:
             color_code = "\033[0m"; // Reset to default color
     }
-
-    // Print the character with the selected color and reset to default color
     std::cout << color_code << c << "\033[0m ";
+    // std::cout<<c<<" ";
 }
 void Cube::Open_Show() {
     for (int j = 0; j < 3; j++) {
@@ -482,11 +523,6 @@ std::pair<char,char> Cube::Find_Color(char col_1,char col_2)
                 // std::cout<<id_face[i]<<":"<<id_face[j]<<" ";
                 std::pair<int,int>bias_i=face_map[id_face[i]][id_face[j]];
                 std::pair<int,int>bias_j=face_map[id_face[j]][id_face[i]];
-                // std::cout<<bias_i.first<<":"<<bias_i.second<<" ";
-                // std::cout<<bias_j.first<<":"<<bias_j.second<<std::endl;
-                // Show(id_face[i]);
-                // std::cout<<Polyhedral[id_face[i]][1+bias_i.first][1+bias_i.second]<<" ";
-                // std::cout<<Polyhedral[id_face[j]][1+bias_j.first][1+bias_j.second]<<std::endl;
                 if(Polyhedral[id_face[i]][1+bias_i.first][1+bias_i.second]==col_1&&Polyhedral[id_face[j]][1+bias_j.first][1+bias_j.second]==col_2)
                 {
                     result.first=id_face[i];
@@ -520,6 +556,589 @@ std::tuple<char,char,char> Cube::Find_Color_Sharp(char col_1,char col_2,char col
                 } 
             }
         }
+    }
+}
+void Cube::fix_bottom_cross()
+{
+    Cube* cube=this;
+    map<int,char>map_color_tmp={{0,'L'},{2,'R'},{3,'F'},{1,'B'}};
+    for(int i=0;i<4;i++)
+    {
+        char tmp_color=map_color_tmp[i];
+        char tmp_color_op=map_color_tmp[(2+i)%4];
+        // std::cout<<"tmp_color:"<<tmp_color<<std::endl;
+        // std::cout<<"tmp_color_op:"<<tmp_color_op<<std::endl;
+        std::pair<char,char>egdes=cube->Find_Color(tmp_color,'D');
+        // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
+        if(egdes.first=='D')//
+        {
+            cube->performSingleMove(egdes.second);
+            cube->performSingleMove(egdes.second);
+            // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
+        }
+        if(egdes.second=='D')//如果已经在底面
+        {
+            cube->performSingleMove(egdes.first);
+            cube->performSingleMove(egdes.first);
+            // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
+        }
+        egdes=cube->Find_Color(tmp_color,'D');
+        if(egdes.first==tmp_color_op||egdes.second==tmp_color_op)//如果在对面
+        {
+            // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
+            int times=0;
+            while(egdes.first!='U'&&egdes.second!='U')//转到顶面
+            {
+                times++;
+                cube->performSingleMove(tmp_color_op);
+                egdes=cube->Find_Color(tmp_color,'D');
+                // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
+            }
+            cube->performMoves("U2");
+            times=((4-times)%4+4)%4;
+            while(times>0)//还原转动
+            {
+                times--;
+                cube->performSingleMove(tmp_color_op);
+            }
+            egdes=cube->Find_Color(tmp_color,'D');
+        }
+        // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
+        if(egdes.first=='U'||egdes.second=='U')//如果在顶面
+        {
+            while(egdes.first!=tmp_color&&egdes.second!=tmp_color)
+            {
+                cube->performMoves("U");
+                egdes=cube->Find_Color(tmp_color,'D');
+            }
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+        }
+        while(egdes.first!='D'&&egdes.second!='D')
+        {
+            cube->performSingleMove(tmp_color);
+            egdes=cube->Find_Color(tmp_color,'D');
+        }
+        if(egdes.first=='D'&&egdes.second==tmp_color)
+        {
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            char tmp_color_right=map_color_tmp[(i+1)%4];
+            // std::cout<<"tmp_color_right:"<<tmp_color_right<<std::endl;
+            cube->performSingleMove(tmp_color_right);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color_right);
+            cube->performSingleMove(tmp_color_right);
+            cube->performSingleMove(tmp_color_right);
+        }
+        // return true;
+        // cube->Open_Show();
+    }
+}
+void Cube::fix_bottom_total()
+{
+    Cube* cube=this;
+    map<int,char>map_color_tmp={{0,'L'},{1,'B'},{2,'R'},{3,'F'}};
+    map<char,int>map_id_tmp={{'L',0},{'R',2},{'F',3},{'B',1}};
+    for(int i=0;i<4;i++)//每次处理tmp_color与tmp_color_lf
+    {
+        char tmp_color=map_color_tmp[i];
+        char tmp_color_lf=map_color_tmp[(1+i)%4];
+        char tmp_color_op=map_color_tmp[(2+i)%4];
+        char tmp_color_rt=map_color_tmp[(3+i)%4];
+        std::tuple<char,char,char>sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
+        char col_1=std::get<0>(sharps);
+        char col_2=std::get<1>(sharps);
+        char col_3=std::get<2>(sharps);
+        // std::cout<<tmp_color<<"&"<<tmp_color_lf<<"&D:"<<std::endl;
+        // std::cout<<std::get<0>(sharps)<<" "<<std::get<1>(sharps)<<" "<<std::get<2>(sharps)<<std::endl;
+        if((col_1==tmp_color&&col_2==tmp_color_lf)||(col_2==tmp_color&&col_3==tmp_color_lf)||(col_3==tmp_color&&col_1==tmp_color_lf))//位置正确
+        {
+            ;
+        }
+        else
+        {
+            if(col_1=='D'||col_2=='D'||col_3=='D')//如果说在底面
+            {
+                char tmp_1=col_1,tmp_2=col_2;
+                if(tmp_1=='D')tmp_1=col_3;
+                if(tmp_2=='D')tmp_2=col_3;
+                if(map_id_tmp[tmp_1]<map_id_tmp[tmp_2])std::swap(tmp_1,tmp_2);
+                if(map_id_tmp[tmp_1]==3&&map_id_tmp[tmp_2]==0)std::swap(tmp_1,tmp_2);
+                // std::cout<<"tmp_1:"<<tmp_1<<" tmp_2:"<<tmp_2<<std::endl;
+                cube->performSingleMove(tmp_2);
+                cube->performSingleMove('U');
+                cube->performSingleMove(tmp_2);
+                cube->performSingleMove(tmp_2);
+                cube->performSingleMove(tmp_2);
+                sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
+                col_1=std::get<0>(sharps);
+                col_2=std::get<1>(sharps);
+                col_3=std::get<2>(sharps);
+            }
+            while((col_1!=tmp_color_lf||col_2!=tmp_color)&&(col_2!=tmp_color_lf||col_3!=tmp_color)&&(col_3!=tmp_color_lf||col_1!=tmp_color))//变为逆序
+            {
+                // std::cout<<"before: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
+                cube->performSingleMove('U');
+                sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
+                col_1=std::get<0>(sharps);
+                col_2=std::get<1>(sharps);
+                col_3=std::get<2>(sharps);
+            }
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
+            col_1=std::get<0>(sharps);
+            col_2=std::get<1>(sharps);
+            col_3=std::get<2>(sharps);
+        }
+        // std::cout<<"before: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
+        while(col_1=='D'||col_2=='D')//变为顺序
+        {
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
+            col_1=std::get<0>(sharps);
+            col_2=std::get<1>(sharps);
+            col_3=std::get<2>(sharps);
+            // std::cout<<"process: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
+        }
+        sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'D');
+        col_1=std::get<0>(sharps);
+        col_2=std::get<1>(sharps);
+        col_3=std::get<2>(sharps);
+        // std::cout<<"targer: "<<tmp_color<<" "<<tmp_color_lf<<" "<<'D'<<std::endl;
+        // std::cout<<"final: "<<col_1<<" "<<col_2<<" "<<col_3<<std::endl;
+        // cube->Open_Show();
+    }
+}
+void Cube::fix_middle()
+{
+    Cube* cube=this;
+    map<int,char>map_color_tmp={{0,'L'},{2,'R'},{3,'F'},{1,'B'}};
+    map<char,int>map_id_tmp={{'L',0},{'R',2},{'F',3},{'B',1}};
+    for(int i=0;i<4;i++)
+    {
+        char tmp_color=map_color_tmp[i];
+        char tmp_color_lf=map_color_tmp[(1+i)%4];
+        // std::cout<<"tmp_color:"<<tmp_color<<std::endl;
+        // std::cout<<"tmp_color_lf:"<<tmp_color_lf<<std::endl;
+        std::pair<char,char>egdes=cube->Find_Color(tmp_color,tmp_color_lf);
+        // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
+        if((egdes.first!=tmp_color||egdes.second!=tmp_color_lf)&&(egdes.first!=tmp_color_lf||egdes.second!=tmp_color))
+        {
+            if(egdes.first!='U'&&egdes.second!='U')//到顶层
+            {
+                int max_id=map_id_tmp[egdes.first];
+                int min_id=map_id_tmp[egdes.second];
+                if(max_id<min_id)std::swap(max_id,min_id);
+                if(min_id==0&&max_id==3)std::swap(max_id,min_id);
+                // std::cout<<"right:"<<map_color_tmp[min_id]<<" left:"<<map_color_tmp[max_id]<<std::endl;
+                cube->performSingleMove(map_color_tmp[min_id]);
+                cube->performSingleMove('U');
+                cube->performSingleMove('U');
+                cube->performSingleMove('U');
+                cube->performSingleMove(map_color_tmp[min_id]);
+                cube->performSingleMove(map_color_tmp[min_id]);
+                cube->performSingleMove(map_color_tmp[min_id]);
+                cube->performSingleMove('U');
+                cube->performSingleMove('U');
+                cube->performSingleMove('U');
+                cube->performSingleMove(map_color_tmp[max_id]);
+                cube->performSingleMove(map_color_tmp[max_id]);
+                cube->performSingleMove(map_color_tmp[max_id]);
+                cube->performSingleMove('U');
+                cube->performSingleMove(map_color_tmp[max_id]);
+                egdes=cube->Find_Color(tmp_color,tmp_color_lf);
+                // std::cout<<"why?"<<egdes.first<<" "<<egdes.second<<std::endl;
+            }
+            while(egdes.first!=tmp_color&&egdes.second!=tmp_color)//到底层
+            {
+                // std::cout<<egdes.first<<" "<<egdes.second<<std::endl;
+                cube->performSingleMove('U');
+                egdes=cube->Find_Color(tmp_color,tmp_color_lf);
+            }
+                // std::cout<<"fi "<<egdes.first<<" "<<egdes.second<<std::endl;
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            egdes=cube->Find_Color(tmp_color,tmp_color_lf);
+        }
+        if(egdes.first!=tmp_color&&egdes.second!=tmp_color_lf)
+        {
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove(tmp_color);
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove(tmp_color_lf);
+            cube->performSingleMove('U');
+            cube->performSingleMove(tmp_color_lf);
+        }
+        // cube->Open_Show();
+    }
+}
+bool Cube::fix_upper_cross()
+{
+    Cube* cube=this;
+    int bias[4][2]={{1,0},{0,1},{-1,0},{0,-1}};
+    map<int,char>map_color_tmp={{0,'L'},{2,'R'},{3,'F'},{1,'B'}};
+    map<char,int>map_id_tmp={{'L',0},{'R',2},{'F',3},{'B',1}};
+    int times=0,flag=0;
+    for(int i=0;i<4;i++)
+        if(cube->Polyhedral['U'][1+bias[i][0]][1+bias[i][1]]=='U')
+        {
+            times++;
+            flag+=i;
+        }
+    // std::cout<<times<<" "<<flag<<std::endl;
+    if(times==1)
+    {
+        cube->performSingleMove('F');
+        cube->performSingleMove('R');
+        cube->performSingleMove('U');
+        cube->performSingleMove('R');
+        cube->performSingleMove('R');
+        cube->performSingleMove('R');
+        cube->performSingleMove('U');
+        cube->performSingleMove('U');
+        cube->performSingleMove('U');
+        cube->performSingleMove('F');
+        cube->performSingleMove('F');
+        cube->performSingleMove('F');
+    }
+    times=0,flag=0;
+    for(int i=0;i<4;i++)
+        if(cube->Polyhedral['U'][1+bias[i][0]][1+bias[i][1]]=='U')
+        {
+            times++;
+            flag+=i;
+        }
+    // std::cout<<times<<" "<<flag<<std::endl;
+    // cube->Open_Show();
+    if(times==2)
+    {
+        if(flag%2)
+        {
+            while(cube->Polyhedral['U'][0][1]!='U'||cube->Polyhedral['U'][1][0]!='U')
+                cube->performSingleMove('U');
+            cube->performSingleMove('F');
+            cube->performSingleMove('U');
+            cube->performSingleMove('R');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('F');
+            cube->performSingleMove('F');
+            cube->performSingleMove('F');
+        }
+        else
+        {
+            while(cube->Polyhedral['U'][1][2]!='U'||cube->Polyhedral['U'][1][0]!='U')
+                cube->performSingleMove('U');
+            cube->performSingleMove('F');
+            cube->performSingleMove('R');
+            cube->performSingleMove('U');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('F');
+            cube->performSingleMove('F');
+            cube->performSingleMove('F');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('L');
+            cube->performSingleMove('U');
+            cube->performSingleMove('L');
+            cube->performSingleMove('L');
+            cube->performSingleMove('L');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('L');
+            cube->performSingleMove('L');
+            cube->performSingleMove('L');
+        }
+        times=0,flag=0;
+        for(int i=0;i<4;i++)
+            if(cube->Polyhedral['U'][1+bias[i][0]][1+bias[i][1]]=='U')
+            {
+                times++;
+                flag+=i;
+            }
+    }
+    if(times!=4) return false;//判断是否完成
+    // cube->Open_Show();
+    times=0,flag=0;
+    char min_id;
+    for(int i=0;i<4;i++)
+    {
+        char target_col=map_color_tmp[i];
+        std::pair<int,int>bias=cube->face_map[target_col]['U'];
+        if(cube->Polyhedral[target_col][1+bias.first][1+bias.second]==target_col)
+        {
+            times++;
+            flag+=i;
+        }
+    }
+    while(times<2)
+    {
+        cube->performSingleMove('U');
+        times=0;
+        for(int i=0;i<4;i++)
+        {
+            char target_col=map_color_tmp[i];
+            std::pair<int,int>bias=cube->face_map[target_col]['U'];
+            if(cube->Polyhedral[target_col][1+bias.first][1+bias.second]==target_col)
+                times++,min_id=target_col;
+        }
+    }
+    // std::cout<<" "<<times<<" "<<flag<<std::endl;
+    if(times==2)
+    {
+        if(!(flag%2))
+        {
+            int flag_tmp=0;
+            if(cube->Polyhedral['F'][0][1]=='F')
+                cube->performSingleMove('U'),flag_tmp++;
+            cube->performSingleMove('R');
+            cube->performSingleMove('U');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('U');
+            cube->performSingleMove('R');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+
+            cube->performSingleMove('B');
+            cube->performSingleMove('U');
+            cube->performSingleMove('B');
+            cube->performSingleMove('B');
+            cube->performSingleMove('B');
+            cube->performSingleMove('U');
+            cube->performSingleMove('B');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('B');
+            cube->performSingleMove('B');
+            cube->performSingleMove('B');
+            if(!flag_tmp)
+                cube->performSingleMove('U');
+        }
+        else
+        {
+            int tmp_num=(map_id_tmp[cube->Polyhedral['R'][0][1]]-map_id_tmp[cube->Polyhedral['B'][0][1]]+4)%4;
+            while(tmp_num!=1)
+            {
+                cube->performSingleMove('U');
+                // std::cout<<tmp_num<<std::endl;
+                tmp_num=(map_id_tmp[cube->Polyhedral['R'][0][1]]-map_id_tmp[cube->Polyhedral['B'][0][1]]+4)%4;
+            }
+            cube->performSingleMove('R');
+            cube->performSingleMove('U');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('U');
+            cube->performSingleMove('R');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+        }
+        while(cube->Polyhedral['F'][0][1]!='F')
+            cube->performSingleMove('U');
+    }
+    return true;
+}
+void Cube::fix_upper_total()
+{
+    Cube* cube=this;
+    map<int,char>map_color_tmp={{0,'L'},{2,'R'},{3,'F'},{1,'B'}};//(6-i)%4
+    map<char,int>map_id_tmp={{'L',0},{'R',2},{'F',3},{'B',1}};
+    int times=0,flag=0;
+    for(int i=0;i<4;i++)
+    {
+        char tmp_color=map_color_tmp[i];
+        char tmp_color_lf=map_color_tmp[(1+i)%4];
+        std::tuple<char,char,char>sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'U');
+        char col_1=std::get<0>(sharps);
+        char col_2=std::get<1>(sharps);
+        char col_3=std::get<2>(sharps);
+        if((col_1==tmp_color&&col_2==tmp_color_lf)||(col_2==tmp_color&&col_3==tmp_color_lf)||(col_3==tmp_color&&col_1==tmp_color_lf))
+            times++,flag=i;
+    }
+    if(times==4)
+        return;
+    // std::cout<<"hi:"<<times<<"\n";
+    if(times==0)
+    {
+        cube->performSingleMove('U');
+        cube->performSingleMove('R');
+        cube->performSingleMove('U');
+        cube->performSingleMove('U');
+        cube->performSingleMove('U');
+        cube->performSingleMove('L');
+        cube->performSingleMove('L');
+        cube->performSingleMove('L');
+        cube->performSingleMove('U');
+        cube->performSingleMove('R');
+        cube->performSingleMove('R');
+        cube->performSingleMove('R');
+        cube->performSingleMove('U');
+        cube->performSingleMove('U');
+        cube->performSingleMove('U');
+        cube->performSingleMove('L');
+    }
+    times=0;
+    for(int i=0;i<4;i++)
+    {
+        char tmp_color=map_color_tmp[i];
+        char tmp_color_lf=map_color_tmp[(1+i)%4];
+        std::tuple<char,char,char>sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'U');
+        char col_1=std::get<0>(sharps);
+        char col_2=std::get<1>(sharps);
+        char col_3=std::get<2>(sharps);
+        if((col_1==tmp_color&&col_2==tmp_color_lf)||(col_2==tmp_color&&col_3==tmp_color_lf)||(col_3==tmp_color&&col_1==tmp_color_lf))
+            times++,flag=i;
+    }
+    // std::cout<<"hi:"<<times<<" "<<flag<<"\n";
+    // cube->Open_Show();
+    if(times==1)
+    {
+        do
+        {
+            int cnt=(6-flag)%4;
+            for(int j=0;j<cnt;j++)
+                cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('R');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('L');
+            cube->performSingleMove('L');
+            cube->performSingleMove('L');
+            cube->performSingleMove('U');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('U');
+            cube->performSingleMove('L');
+            cnt=(4-cnt)%4;
+            for(int j=0;j<cnt;j++)
+                cube->performSingleMove('U');
+            times=0;
+            // printf("%d\n",cnt);
+            for(int i=0;i<4;i++)
+            {
+                char tmp_color=map_color_tmp[i];
+                char tmp_color_lf=map_color_tmp[(1+i)%4];
+                std::tuple<char,char,char>sharps=cube->Find_Color_Sharp(tmp_color,tmp_color_lf,'U');
+                char col_1=std::get<0>(sharps);
+                char col_2=std::get<1>(sharps);
+                char col_3=std::get<2>(sharps);
+                if((col_1==tmp_color&&col_2==tmp_color_lf)||(col_2==tmp_color&&col_3==tmp_color_lf)||(col_3==tmp_color&&col_1==tmp_color_lf))
+                    times++,flag=i;
+            }
+            // cube->Open_Show();
+        }while(times==1);
+    }
+}
+void Cube::fix_final()
+{
+    Cube* cube=this;
+    int t=0;
+    while(t<4)
+    {
+        while(cube->Polyhedral['U'][2][2]!='U')
+        {
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('R');
+            cube->performSingleMove('D');
+            cube->performSingleMove('D');
+            cube->performSingleMove('D');
+            cube->performSingleMove('R');
+            cube->performSingleMove('D');
+        }
+        t++;
+        cube->performSingleMove('U');
     }
 }
 // int main()
