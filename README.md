@@ -28,7 +28,20 @@ This is a repository for my Data Structure homework.
 * [x] Fibonacci Heap
 * [x] ABC Problem
 
-## Can AVL Play Magic Cube?
+## Can AVL Play Magic Cube?（week_7）
 
 * [x] AVL Tree
-* [ ] Cube Problem
+* [x] Cube Problem
+
+
+
+### (week_8)
+
+* [ ] KD-Tree
+* [ ] Visibility Graphy
+
+## (week_9)
+
+* [ ] Disjoint sets
+* [ ] Manifold
+* [ ] 
