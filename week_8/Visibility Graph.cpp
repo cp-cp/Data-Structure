@@ -83,12 +83,17 @@ class edge
         node *start=NULL;
         node *end=NULL;
         edge(node *start,node *end):start(start),end(end){};
+        edge(node start,node end){
+            node* tmp=new node(start.x,start.y);
+            this->start=tmp;
+            tmp=new node(end.x,end.y);
+            this->end=tmp;
+        };
         void print()
         {
-            cout<<"线段端点为:";
+            cout<<"线段端点为:\n";
             start->print();
             end->print();
-            // cout<<start->id<<" "<<end->id<<"\n";
         };
 };
 class graph
@@ -111,6 +116,18 @@ class graph
             {
                 node_set.push_back(nodes[i]);
             }
+        };
+        void add_edge(vector<edge> edges)
+        {
+            for(int i=0;i<edges.size();i++)
+            {
+                edge_set.push_back(edges[i]);
+            }
+        };
+        void add_edge(edge* tmp)
+        {
+            new edge(*tmp);
+            edge_set.push_back(*tmp);
         };
 };
 class polygon
@@ -170,16 +187,18 @@ bool cmp(const node& a,const node& b)
 
 bool Visible_Node(const edge e,const node p,const node o)
 {
-    double x_1=e.start->x;
-    double y_1=e.start->y;
-    double x_2=e.end->x;
-    double y_2=e.end->y;
-    double x_3=p.x;
-    double y_3=p.y;
-    double x_4=o.x;
-    double y_4=o.y;
+    double x_1=o.x;
+    double y_1=o.y;
+    double x_2=e.start->x;
+    double y_2=e.start->y;
+    double x_3=e.end->x;
+    double y_3=e.end->y;
     double tmp_1=x_1*y_2+x_2*y_3+x_3*y_1-x_1*y_3-x_2*y_1-x_3*y_2;
-    double tmp_2=x_1*y_2+x_2*y_4+x_4*y_1-x_1*y_4-x_2*y_1-x_4*y_2;
+    x_1=p.x;
+    y_1=p.y;
+    double tmp_2=x_1*y_2+x_2*y_3+x_3*y_1-x_1*y_3-x_2*y_1-x_3*y_2;
+    // cout<<"tmp_1:"<<tmp_1<<"\n";
+    // cout<<"tmp_2:"<<tmp_2<<"\n";
     if(tmp_1*tmp_2<0)
     {
         return false;
@@ -195,11 +214,8 @@ vector<node> Visible_Check(node* p,vector<polygon*> polygon_set)
     vector<node> all_node;
     vector<edge> all_edge;
     std::unordered_map<node,pair<edge,edge>,NodeHash> node_to_edge;
-    auto customCompare = [&p](const edge& a, const edge& b) {
-        double a_x=get_x(a,p);
-        double b_x=get_x(b,p);
-        return a_x>b_x;
-    };
+
+    std::unordered_map<node,int,NodeHash>node_to_polygon;
     // priority_queue<edge,vector<edge>,decltype(customCompare)>scan_line(customCompare);
 
     vector<edge>scan_line;
@@ -210,23 +226,15 @@ vector<node> Visible_Check(node* p,vector<polygon*> polygon_set)
         all_node.insert(all_node.end(),tmp.begin(),tmp.end());//获取所有点集
         vector<edge> tmp_edge=polygon_set[i]->get_edge_set();
         all_edge.insert(all_edge.end(),tmp_edge.begin(),tmp_edge.end());//获取所有边集
-        for(int i=0;i<tmp.size();i++)
+        for(int j=0;j<tmp.size();j++)
         {
-            node* tmp_node=&tmp[i];
-            edge* tmp_edge_1=&tmp_edge[i];
-            edge* tmp_edge_2=&tmp_edge[(i-1+tmp.size())%tmp.size()];
-
+            node* tmp_node=&tmp[j];
+            edge* tmp_edge_1=&tmp_edge[j];
+            edge* tmp_edge_2=&tmp_edge[(j-1+tmp.size())%tmp.size()];
             node_to_edge.insert({*tmp_node,std::make_pair(*tmp_edge_1,*tmp_edge_2)});
+            node_to_polygon.insert({*tmp_node,i});
         }//建立node到edge的映射
     }
-
-    // for(auto it=node_to_edge.begin();it!=node_to_edge.end();it++)
-    // {
-    //     node tmp_node=it->first;
-    //     cout<<"node:\n";tmp_node.print();
-    //     pair<edge,edge> tmp_edge=it->second;
-    //     cout<<"edge:\n";tmp_edge.first.print();tmp_edge.second.print();
-    //     cout<<"\n";
     // }
     for(int i=0;i<all_node.size();i++)
     {
@@ -234,26 +242,8 @@ vector<node> Visible_Check(node* p,vector<polygon*> polygon_set)
         tmp->update(p);
     }//更新所有点的距离和角度
 
-    // cout<<"更新后:\n";
-    // for(int i=0;i<all_node.size();i++)
-    // {
-    //     all_node[i].print();
-    // }//打印所有点
-
     sort(all_node.begin(),all_node.end(),cmp);
 
-    // sort(all_node.begin(),all_node.end(),[](const node& a,const node& b){
-    //         if(a.degree==b.degree)
-    //             return a.dis<b.dis;
-    //         else  
-    //             return a.degree<b.degree;
-    //     });//排序
-
-    // cout<<"排序后:\n";
-    // for(int i=0;i<all_node.size();i++)
-    // {
-    //     all_node[i].print();
-    // }//打印所有点
 
     for(int i=0;i<all_edge.size();i++)
     {
@@ -284,88 +274,132 @@ vector<node> Visible_Check(node* p,vector<polygon*> polygon_set)
     for(int i=0;i<all_node.size();i++)
     {
         node tmp_node=all_node[i];//取出一个点
-        // cout<<i<<":";tmp_node.print();
+        // cout<<"当前点:";
+        // tmp_node.print();
         //判断是否可见
-        edge top=scan_line[0];
         int index=0;
-        if(Visible_Node(top,tmp_node,*p))
+        // top.print();
+        // cout<<node_to_polygon.at(*p)<<" "<<node_to_polygon.at(tmp_node)<<"\n";
+        if(node_to_polygon.at(*p)==node_to_polygon.at(tmp_node))
         {
-            vis_node.push_back(tmp_node);
-            index=0;   
+            // cout<<tmp_node.x<<" "<<tmp_node.y<<"\n";
+            index=0;
+        }
+        else //if(!scan_line.empty())
+        {
+            // cout<<scan_line.size()<<"\n";
+            if(scan_line.empty())
+            {
+                vis_node.push_back(tmp_node);
+            }
+            else
+            {
+                //cout<<"hihihihi\n";            
+                edge top=scan_line[0];
+                // cout<<"扫描线:";
+                // top.print();
+                if(Visible_Node(top,tmp_node,*p))
+                {
+                    // printf("可见\n");
+                    vis_node.push_back(tmp_node);
+                    index=0;   
+                }
+                else
+                {
+                    index=1;
+                    while(index<scan_line.size()&&!Visible_Node(scan_line[index],tmp_node,*p))
+                    {
+                        index++;
+                    }
+                }
+            }
+        }
+
+        // cout<<"hihihihihihih\n";
+
+        // tmp_node.print();
+        // cout<<"len: "<<scan_line.size()<<"\n";
+        // cout<<"index:"<<index<<"\n";
+        //更新扫描线
+        edge tmp_edge_1=node_to_edge.at(tmp_node).first;
+        edge tmp_edge_2=node_to_edge.at(tmp_node).second;
+
+        //保证当前结点在start上
+        if(tmp_edge_1.start->id!=tmp_node.id)
+            std::swap(tmp_edge_1.start,tmp_edge_1.end);
+        if(tmp_edge_2.start->id!=tmp_node.id)
+            std::swap(tmp_edge_2.start,tmp_edge_2.end);
+        
+        //判断左右:ToLeft算法
+        double x_1=p->x;
+        double y_1=p->y;
+        double x_2=tmp_node.x;
+        double y_2=tmp_node.y;
+        double x_3=tmp_edge_1.end->x;
+        double y_3=tmp_edge_1.end->y;
+        // cout<<x_1<<" "<<y_1<<" "<<x_2<<" "<<y_2<<" "<<x_3<<" "<<y_3<<"\n"; 
+        double test_edge_1=x_1*y_2+x_2*y_3+x_3*y_1-x_1*y_3-x_2*y_1-x_3*y_2;
+
+        x_3=tmp_edge_2.end->x;
+        y_3=tmp_edge_2.end->y;
+        double test_edge_2=x_1*y_2+x_2*y_3+x_3*y_1-x_1*y_3-x_2*y_1-x_3*y_2;
+
+        x_1=tmp_edge_1.end->x;
+        y_1=tmp_edge_1.end->y;
+        double test_order=x_1*y_2+x_2*y_3+x_3*y_1-x_1*y_3-x_2*y_1-x_3*y_2;
+
+        // cout<<"test_edge_1:"<<test_edge_1<<"\n";
+        // cout<<"test_edge_2:"<<test_edge_2<<"\n";
+        // cout<<"test_order:"<<test_order<<"\n";
+
+
+        if(test_edge_1>0&&test_edge_2>0)
+        {
+            if(test_order>0)
+            {
+                scan_line.insert(scan_line.begin()+index,tmp_edge_2);
+                scan_line.insert(scan_line.begin()+index,tmp_edge_1);
+            }
+            else
+            {
+                scan_line.insert(scan_line.begin()+index,tmp_edge_1);
+                scan_line.insert(scan_line.begin()+index,tmp_edge_2);
+            }
         }
         else
         {
-            index=1;
-            while(index<scan_line.size()&&!Visible_Node(scan_line[index],tmp_node,*p))
+            if(test_edge_1<0)
             {
-                index++;
+                for(int j=index;j<scan_line.size();j++)
+                {
+                    if((scan_line[j].start->x==tmp_edge_1.start->x&&scan_line[j].start->y==tmp_edge_1.start->y)||(scan_line[j].end->x==tmp_edge_1.start->x&&scan_line[j].end->y==tmp_edge_1.start->y))
+                    {
+                        scan_line.erase(scan_line.begin()+j);
+                        break;
+                    }
+                }
+            }
+            if(test_edge_2<0)
+            {
+                for(int j=index;j<scan_line.size();j++)
+                {
+                    if((scan_line[j].start->x==tmp_edge_2.start->x&&scan_line[j].start->y==tmp_edge_2.start->y)||(scan_line[j].end->x==tmp_edge_2.start->x&&scan_line[j].end->y==tmp_edge_2.start->y))
+                    {
+                        scan_line.erase(scan_line.begin()+j);
+                        break;
+                    }
+                }
+            }
+            if(test_edge_1>0)
+            {
+                scan_line.insert(scan_line.begin()+index,tmp_edge_1);
+            }
+            if(test_edge_2>0)
+            {
+                scan_line.insert(scan_line.begin()+index,tmp_edge_2);
             }
         }
-        // tmp_node.print();
-        // cout<<"index:"<<index<<"\n";
-        //更新扫描线
-        /*
-            考虑如何由点确定边？
-            已知一个点一定对应于两条边。
-            考虑下面这些方案：
-            方案1:在边集中找到这两条边，单次查询O(N)
-            方案2:用map建立,点到pair<edge,edge>的关系，单次查询O(logN)
-            那么这里采用方案2.
-            是否有更好的处理方式？？？
-        */
-        // cout<<vis_node.size();
-        // node * tmp_o=new node(0,0);
-        // tmp_node.update(tmp_o);
-
-        // tmp_node.print();
-
-        edge tmp_edge_1=node_to_edge.at(tmp_node).first;
-        
-        cout<<"点"<<tmp_node.x<<" "<<tmp_node.y<<"\n";
-        // tmp_edge_1.print();
-
-
-        node* tmp_node_1_1=tmp_edge_1.start;
-        node* tmp_node_1_2=tmp_edge_1.end;
-        if(tmp_node_1_1->degree>tmp_node_1_2->degree)
-        {
-            node* tmp=tmp_node_1_1;
-            tmp_node_1_1=tmp_node_1_2;
-            tmp_node_1_2=tmp;
-        }//保证tmp_node_1_1的degree小于tmp_node_1_2
-        if(tmp_node.degree<tmp_node_1_2->degree)//如果是较小的那个
-        {
-            scan_line.insert(scan_line.begin()+index,tmp_edge_1);
-        }
-
-        
-        edge tmp_edge_2=node_to_edge.at(tmp_node).second;
-
-
-        node* tmp_node_2_1=tmp_edge_2.start;
-        node* tmp_node_2_2=tmp_edge_2.end;
-        if(tmp_node_2_1->degree>tmp_node_2_2->degree)
-        {
-            node* tmp=tmp_node_2_1;
-            tmp_node_2_1=tmp_node_2_2;
-            tmp_node_2_2=tmp;
-        }//保证tmp_node_2_1的degree小于tmp_node_2_2
-        if(tmp_node.degree<tmp_node_2_2->degree)//如果是较小的那个
-        {
-            // cout<<"--------\n";
-            scan_line.insert(scan_line.begin()+index,tmp_edge_2);
-        }
-        cout<<"扫描线:"<<scan_line.size()<<"\n";
-        edge tmp_eddge=scan_line[0];
-        tmp_eddge.print();
     }
-    
-    // cout<<"可见点:\n";
-    // for(int i=0;i<vis_node.size();i++)
-    // {
-    //     vis_node[i].print();
-    // }//打印可见点
-
     return vis_node;
 }
 void Visible_Map(graph* g,vector<polygon*> polygon_set)
@@ -375,7 +409,17 @@ void Visible_Map(graph* g,vector<polygon*> polygon_set)
     {
         node* p=&node_set[i];
         vector<node> vis_node;//用来记录可见节点
+        // cout<<"当前点:";
+        // p->print();
         vis_node=Visible_Check(p,polygon_set);
+        for(int j=0;j<vis_node.size();j++)
+        {
+            // node* tmp=new node(vis_node[j].x,vis_node[j].y);
+            edge* tmp_edge=new edge(*p,vis_node[j]);
+            g->add_edge(tmp_edge);
+            // cout<<"可见点:\n";
+            // cout<<vis_node[j].x<<" "<<vis_node[j].y<<"\n";
+        }
     }
 }
 void polygon::push_node(node p)
@@ -415,15 +459,18 @@ int main()
     graph* g=new graph();
     g->add_node(polygon_1->get_node_set());
     g->add_node(polygon_2->get_node_set());
+
+    g->add_edge(polygon_1->get_edge_set());
+    g->add_edge(polygon_2->get_edge_set());
     // cout<<g->node_set.size()<<"\n";
 
     vector<polygon*> polygon_set;
     polygon_set.push_back(polygon_1);
     polygon_set.push_back(polygon_2);
 
-    // Visible_Map(g,polygon_set);
-    node* p=new node(0,0);
-    Visible_Check(p,polygon_set);
-    // g->pr_node();
-    cout<<"hi\n";
+    Visible_Map(g,polygon_set);
+    for(int i=0;i<g->edge_set.size();i++)
+    {
+        g->edge_set[i].print();
+    }
 }
