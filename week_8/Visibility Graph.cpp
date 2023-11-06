@@ -1,14 +1,17 @@
 #include<iostream>
 #include<vector>
 #include<cmath>
+#include<algorithm>
 using std::atan;
 using std::cin;
 using std::cout;
 using std::vector;
+using std::atan2;
+using std::sort;
 
 /*
-Â¶Ç‰ΩïÁ°ÆÂÆöÈ°∫Â∫èÔºü
-0-360Ôºü
+»Á∫Œ»∑∂®À≥–Ú£ø
+0-360£ø
 */
 
 
@@ -21,11 +24,11 @@ double Angle(double x, double y) {
 class node
 {
     public:
-        int x;
-        int y;
+        double x;
+        double y;
         int id=-1;
         double degree=0;
-        node(int x,int y,int id=-1):x(x),y(y),id(id)
+        node(double x,double y,int id=-1):x(x),y(y),id(id)
         {
             degree=Angle(x,y);
         };
@@ -42,16 +45,137 @@ class node
             cout<<x<<" "<<y<<" "<<degree<<"\n";
         };
 };
+class edge
+{
+    public:
+        node *start;
+        node *end;
+        edge(node *start,node *end):start(start),end(end){};
+        void print()
+        {
+            cout<<"œ‡Ωªµƒœﬂ∂ŒŒ™:\n";
+            start->print();
+            end->print();
+            // cout<<start->id<<" "<<end->id<<"\n";
+        };
+};
+class graph
+{
+    public:
+        vector<node>node_set;
+        vector<edge>edge_set;
+        graph(){};
+        void push_node(node p);
+        void print_node()
+        {
+            for(int i=0;i<node_set.size();i++)
+            {
+                node_set[i].print();
+            }
+        };
+        void add_node(vector<node> nodes)
+        {
+            for(int i=0;i<nodes.size();i++)
+            {
+                node_set.push_back(nodes[i]);
+            }
+        };
+};
 class polygon
 {
-    vector<node>node_set;//Âº∫Âà∂ËßÑÂÆöÊåâÈ°∫Â∫èÊèíÂÖ•ÔºÅ
     int node_num=0;
+    vector<node>node_set;//«ø÷∆πÊ∂®∞¥~À≥–Ú≤Â»Î£°
+    vector<edge>edge_set;
     public:
         node* max_node=NULL;
         node* min_node=NULL;
         polygon(){};
         void push_node(node p);
+        void add_edge(node p1,node p2)
+        {
+            edge* tmp=new edge(&p1,&p2);
+        };
+        void set_edge()
+        {
+            for(int i=0;i<node_set.size();i++)
+            {
+                node* p1=&node_set[i];
+                node* p2=&node_set[(i+1)%node_set.size()];
+                edge* tmp=new edge(p1,p2);
+                edge_set.push_back(*tmp);
+            }
+        };
+        vector<node> get_node_set(){return this->node_set;};
+        vector<edge> get_edge_set(){return this->edge_set;};
 };
+vector<node> Visible_Check(node* p,vector<polygon*> polygon_set)
+{
+    cout<<"hi\n";
+    p->print();
+    vector<node> vis_node;
+    vector<node> all_node;
+    vector<edge> all_edge;
+    vector<edge> scan_line;
+    // priority_queue<node> scan_line;
+    for(int i=0;i<polygon_set.size();i++)
+    {
+        vector<node> tmp=polygon_set[i]->get_node_set();
+        all_node.insert(all_node.end(),tmp.begin(),tmp.end());
+        vector<edge> tmp_edge=polygon_set[i]->get_edge_set();
+        all_edge.insert(all_edge.end(),tmp_edge.begin(),tmp_edge.end());
+    }//ªÒ»°À˘”–µ„ºØ∫Õ±ﬂºØ
+    sort(all_node.begin(),all_node.end(),[p](const node& a,const node& b){return a.degree<b.degree;});//≈≈–Ú
+    for(int i=0;i<all_edge.size();i++)
+    {
+        edge* tmp=&all_edge[i];
+        node* node_1=tmp->start;
+        node* node_2=tmp->end;
+        double x1=node_1->x-p->x;
+        double y1=node_1->y-p->y;
+        double x2=node_2->x-p->x;
+        double y2=node_2->y-p->y;
+        if(y1*y2<0)
+        {
+            if((1.0*(x1-x2)/(y1-y2)*(-y2)+x2)>=0)
+            {
+                scan_line.push_back(*tmp);
+            }
+        }
+        if(y1==0&&x1>=0)
+        {
+            scan_line.push_back(*tmp);
+        }
+        if(y2==0&&x2>=0)
+        {
+            scan_line.push_back(*tmp);
+        }
+    }
+    for(int i=0;i<scan_line.size();i++)
+    {
+        scan_line[i].print();
+    }
+
+
+
+    return vis_node;
+    // while(all_node[0].degree==0)
+    // {
+    //     node tmp=all_node[0];
+    //     all_node.erase(all_node.begin());
+    //     vis_node.push_back(tmp);
+    //     //øº¬«»Á∫Œ”…µ„»∑∂®±ﬂ£ø
+    // }
+}
+void Visible_Map(graph* g,vector<polygon*> polygon_set)
+{
+    vector<node> node_set=g->node_set;//ªÒ»°À˘”–Ω⁄µ„
+    for(int i=0;i<node_set.size();i++)
+    {
+        node* p=&node_set[i];
+        vector<node> vis_node;//”√¿¥º«¬ºø…º˚Ω⁄µ„
+        vis_node=Visible_Check(p,polygon_set);
+    }
+}
 void polygon::push_node(node p)
 {
     node* tmp=new node(p);
@@ -61,10 +185,12 @@ void polygon::push_node(node p)
     if(min_node==NULL)min_node=tmp;
     if(max_node->degree-p.degree<0)max_node=tmp;
     if(min_node->degree-p.degree>0)min_node=tmp;
+    if(this->node_num>1)
+    this->add_edge(*tmp,(this->node_set[this->node_num-2]));
 }
 int main()
 {
-    //ËÆæËÆ°Ëµ∑ÁÇπ
+    //…Ëº∆∆µ„
     node* start_node=new node(0,0);
     polygon* polygon_1=new polygon();
     polygon_1->push_node({1,2,1});
@@ -72,6 +198,7 @@ int main()
     polygon_1->push_node({3,5,3});
     polygon_1->push_node({4,1,4});
     polygon_1->push_node({3,0,5});
+    polygon_1->set_edge();
 
     polygon* polygon_2=new polygon();
     polygon_2->push_node({2,0,1});
@@ -80,6 +207,21 @@ int main()
     polygon_2->push_node({4,-2,4});
     polygon_2->push_node({2,-4,5});
     polygon_2->push_node({1,-1,6});
+    polygon_2->set_edge();
 
-    
+
+    graph* g=new graph();
+    g->add_node(polygon_1->get_node_set());
+    g->add_node(polygon_2->get_node_set());
+    // cout<<g->node_set.size()<<"\n";
+
+    vector<polygon*> polygon_set;
+    polygon_set.push_back(polygon_1);
+    polygon_set.push_back(polygon_2);
+
+    // Visible_Map(g,polygon_set);
+    node* p=new node(2,4);
+    Visible_Check(p,polygon_set);
+    // g->pr_node();
+    // cout<<"hi\n";
 }
