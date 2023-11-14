@@ -70,6 +70,10 @@ class node
         }
 };
 
+
+vector<vector<node>> node_list;
+vector<node>head;
+
 struct NodeHash 
 {
     std::size_t operator()(const node& p) const 
@@ -216,7 +220,6 @@ vector<node> Visible_Check(node* p,vector<polygon*> polygon_set)
     std::unordered_map<node,pair<edge,edge>,NodeHash> node_to_edge;
 
     std::unordered_map<node,int,NodeHash>node_to_polygon;
-    // priority_queue<edge,vector<edge>,decltype(customCompare)>scan_line(customCompare);
 
     vector<edge>scan_line;
 
@@ -261,14 +264,6 @@ vector<node> Visible_Check(node* p,vector<polygon*> polygon_set)
                 scan_line.push_back(*tmp);
             }
         }
-        // if(y1==0&&x1>=0)
-        // {
-        //     scan_line.push_back(*tmp);
-        // }
-        // if(y2==0&&x2>=0)
-        // {
-        //     scan_line.push_back(*tmp);
-        // }
     }//初始化0°扫描线
 
     for(int i=0;i<all_node.size();i++)
@@ -314,9 +309,6 @@ vector<node> Visible_Check(node* p,vector<polygon*> polygon_set)
                 }
             }
         }
-
-        // cout<<"hihihihihihih\n";
-
         // tmp_node.print();
         // cout<<"len: "<<scan_line.size()<<"\n";
         // cout<<"index:"<<index<<"\n";
@@ -347,11 +339,6 @@ vector<node> Visible_Check(node* p,vector<polygon*> polygon_set)
         x_1=tmp_edge_1.end->x;
         y_1=tmp_edge_1.end->y;
         double test_order=x_1*y_2+x_2*y_3+x_3*y_1-x_1*y_3-x_2*y_1-x_3*y_2;
-
-        // cout<<"test_edge_1:"<<test_edge_1<<"\n";
-        // cout<<"test_edge_2:"<<test_edge_2<<"\n";
-        // cout<<"test_order:"<<test_order<<"\n";
-
 
         if(test_edge_1>0&&test_edge_2>0)
         {
@@ -412,13 +399,13 @@ void Visible_Map(graph* g,vector<polygon*> polygon_set)
         // cout<<"当前点:";
         // p->print();
         vis_node=Visible_Check(p,polygon_set);
+        head.push_back(*p);
+        node_list.push_back(vis_node);
         for(int j=0;j<vis_node.size();j++)
         {
             // node* tmp=new node(vis_node[j].x,vis_node[j].y);
             edge* tmp_edge=new edge(*p,vis_node[j]);
             g->add_edge(tmp_edge);
-            // cout<<"可见点:\n";
-            // cout<<vis_node[j].x<<" "<<vis_node[j].y<<"\n";
         }
     }
 }
@@ -433,6 +420,26 @@ void polygon::push_node(node p)
     if(min_node->degree-p.degree>0)min_node=tmp;
     if(this->node_num>1)
     this->add_edge(*tmp,(this->node_set[this->node_num-2]));
+}
+void Dijkstra(node start,node end)
+{
+    std::queue<node>q;
+    q.push(start);
+    while(q.empty())
+    {
+        node top=q.front();
+        q.pop();
+        for(int i=0;i<head.size();i++)
+        {
+            if(top==head[i])
+            {
+                for(int j=0;j<node_list[i].size();j++)
+                {
+                    q.push(node_list[i][j]);
+                }
+            }
+        }
+    }
 }
 int main()
 {
@@ -462,15 +469,21 @@ int main()
 
     g->add_edge(polygon_1->get_edge_set());
     g->add_edge(polygon_2->get_edge_set());
-    // cout<<g->node_set.size()<<"\n";
 
     vector<polygon*> polygon_set;
     polygon_set.push_back(polygon_1);
     polygon_set.push_back(polygon_2);
 
     Visible_Map(g,polygon_set);
-    for(int i=0;i<g->edge_set.size();i++)
-    {
-        g->edge_set[i].print();
-    }
+
+    node* start_node=new node(0,0);
+    vector<node>tmp_1=Visible_Check(start_node,polygon_set);
+
+    node* end_node=new node(5,3);
+    vector<node>tmp_2=Visible_Check(end_node,polygon_set);
+
+    head.push_back(*start_node);
+    node_list.push_back(tmp_1);
+    head.push_back(*end_node);
+    Dijkstra(*start_node,*end_node);
 }
