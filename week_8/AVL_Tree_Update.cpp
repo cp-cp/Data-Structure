@@ -1,5 +1,17 @@
 #include<iostream>
 using std::max;
+/*
+增加了左右子树的SIZE
+如插入1 2 3 4 5 6 7
+先序遍历获取：每个节点的四元组(节点编号，节点左子树Size，节点右子树Size，节点高度)
+4 3 3 3
+2 1 1 2
+1 0 0 1
+3 0 0 1
+6 1 1 2
+5 0 0 1
+7 0 0 1
+*/
 class AVL_Node{
     public:
         int data;
