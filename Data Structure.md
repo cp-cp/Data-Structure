@@ -397,3 +397,22 @@ dis[i][j]=min(dis[i][j],dis[i][m]+dis[m][j])
 如何记录路径？
 
 只记录最后一次更新的k，然后分治去找。
+
+
+
+
+
+## RRT算法
+
+存在少量交叉
+
+不适用：窄空间出现狭缝。
+
+学术：对解空间的整体结构存在盲目，缺乏先验知识。
+
+原理流程图：
+
+<img src="/Users/cp_cp/Library/Application Support/typora-user-images/image-20231122152255044.png" alt="image-20231122152255044" style="zoom: 33%;" />
+
+
+
