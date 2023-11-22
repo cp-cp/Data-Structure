@@ -6,7 +6,7 @@ class Edge{
         int x;
         int y;
         int w;
-        bool operator < (const Edge& e)
+        bool operator < (const Edge& e) const
         {
             return w<e.w;
         }

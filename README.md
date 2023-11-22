@@ -35,15 +35,22 @@ This is a repository for my Data Structure homework.
 
 
 
-### (week_8)
+### I Kan Decide(week_8)
 
-* [ ] KD-Tree
-* [ ] Visibility Graphy
+* [x] KD-Tree
+* [x] Visibility Graphy
 
-## (week_9)
+### Find by Rank or Just Compress？(week_9)
 
-* [ ] Disjoint sets
-* [ ] Manifold
+* [x] Disjoint sets
+* [x] Manifold
 
 
+### Primary（week_10）
 
+* [x] Prime
+
+### Minimise The Eular(week_11)
+
+* [x] Kruscal
+* [ ] Fleury
