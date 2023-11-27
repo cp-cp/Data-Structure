@@ -416,3 +416,43 @@ dis[i][j]=min(dis[i][j],dis[i][m]+dis[m][j])
 
 
 
+
+
+## Week_13(Graph)
+
+### BFS&DFS
+
+
+
+
+
+### 强联通分量
+
+
+
+### Tarjan算法
+
+```c++
+void tarjan(int x)
+{
+	dfn[x]=low[x]=++tim;//dfs序
+	v[x]=1;//标记访问
+	for(int i=head[x];i;i=edge[i].next)//遍历下一个节点
+	{
+		int y=edge[i].to;//取节点
+		if(!dfn[y])tarjan(y),low[x]=min(low[x],low[y]);//没有访问，访问后更新
+		else if(v[y])low[x]=min(low[x],dfn[y]);//访问了，直接更新
+	}
+}
+```
+
+### 图同构
+
+比较Hard。
+
+
+
+### 划归平面图
+
+
+
