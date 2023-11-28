@@ -1,10 +1,6 @@
 # Data-Structure
 This is a repository for my Data Structure homework.
 
-
-
-
-
 ## Structure List：(week 1-2)
 
 * [x] Linked List
@@ -33,24 +29,32 @@ This is a repository for my Data Structure homework.
 * [x] AVL Tree
 * [x] Cube Problem
 
-
-
-### I Kan Decide(week_8)
+## I Kan Decide(week_8)
 
 * [x] KD-Tree
 * [x] Visibility Graphy
 
-### Find by Rank or Just Compress？(week_9)
+## Find by Rank or Just Compress？(week_9)
 
 * [x] Disjoint sets
 * [x] Manifold
 
-
-### Primary（week_10）
+## Primary（week_10）
 
 * [x] Prime
 
-### Minimise The Eular(week_11)
+## Minimize The Eular(week_11)
 
 * [x] Kruscal
-* [ ] Fleury
+* [x] Fleury
+
+## Turbulence(week_12)
+
+* [x] Floyd
+
+## To Do
+
+* [ ] Treap
+* [ ] Splay
+* [ ] Skip_List
+* [ ] 可持久化线段树
