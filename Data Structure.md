@@ -174,11 +174,16 @@ N个节点的树，以上时间复杂度为O(NlogN)
 
 动态有序
 
+### Treap（树堆）
+
+### AVL树(https://cloud.tencent.com/developer/article/1155143)
+
+* 条件一：它必须是二叉查找树。
+* 条件二：每个节点的左子树和右子树的高度差至多为1。
 
 
-AVL树(https://cloud.tencent.com/developer/article/1155143)
 
-B树
+### B树
 
 ### 红黑树
 
@@ -398,11 +403,7 @@ dis[i][j]=min(dis[i][j],dis[i][m]+dis[m][j])
 
 只记录最后一次更新的k，然后分治去找。
 
-
-
-
-
-## RRT算法
+### RRT算法
 
 存在少量交叉
 
@@ -453,6 +454,12 @@ void tarjan(int x)
 
 
 ### 划归平面图
+
+
+
+
+
+
 
 
 
