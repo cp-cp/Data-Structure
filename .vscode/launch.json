@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/wxymm/Desktop/Code/Data-Structure/Flipped-Class",
-      "program": "c:/Users/wxymm/Desktop/Code/Data-Structure/Flipped-Class/build/Debug/outDebug",
+      "cwd": "c:/Users/wxymm/Desktop/Code/Data-Structure/week_13",
+      "program": "c:/Users/wxymm/Desktop/Code/Data-Structure/week_13/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

@@ -57,4 +57,4 @@ This is a repository for my Data Structure homework.
 * [ ] Treap
 * [ ] Splay
 * [ ] Skip_List
-* [ ] 可持久化线段树
+* [x] 可持久化线段树

@@ -1,9 +1,11 @@
 #include<iostream>
 #include<stack>
+#include<cstring>
 #include"Graph.h"
 using std::stack;
 using std::min;
 using std::pair;
+using std::memset;
 stack<int>s;
 int tmp=0;
 /*
@@ -20,36 +22,40 @@ int tmp=0;
   这里也体现出了更新low[u]的意义：避免SCC中的节点提前出栈。
 
 
+INPUT:
 5 5
 2 3
 3 4
 4 0
 0 1
 0 3
+OUTPUT:
+Bridge: 3 - 2
+Bridge: 0 - 1
 */
 vector<pair<int,int> >edge;
 void tarjan(int v,int f,int *low_link,int *index,int *vis,Graph* g)
 {
-    low_link[v]=index[v]=tmp++;
+    // cout<<":"<<v<<" "<<tmp<<endl;
+    low_link[v]=index[v]=++tmp;
     vis[v]=1;
-    // s.push(v);
     for(list<int>::iterator it=g->adj[v].begin();it!=g->adj[v].end();++it)
     {
         int p=*it;
-        if(p==f)continue;
-        if(!index[p])
+        // cout<<"SUB:"<<p<<" "<<vis[p]<<endl;
+        if(!vis[p])
         {
             vis[p]=1;
             tarjan(p,v,low_link,index,vis,g);
-            low_link[v]=min(low_link[v],index[p]);
+            low_link[v]=min(low_link[v],low_link[p]);
             // cout<<p<<" "<<low_link[p]<<" "<<index[p]<<" "<<v<<" "<<low_link[v]<<" "<<index[v]<<endl;
             if(low_link[p]>index[v])
             {
-                // cout<<"hihi"<<endl;
+                // cout<<"woc "<<p<<" "<<v<<endl;
                 edge.push_back(std::make_pair(v,p));
             }
         }
-        else if(vis[v])//返祖边
+        else if(p!=f)//返祖边
         {
             low_link[v]=min(low_link[v],index[p]);
         }
@@ -70,12 +76,16 @@ int main()
     int *low_link=new int[n];
     int *index=new int[n];
     int *vis=new int[n];
-    // for(int i=0;i<n;i++)
+    memset(vis,0,sizeof(int)*n);
+    memset(low_link,0,sizeof(int)*n);
+    memset(index,0,sizeof(int)*n);
+    for(int i=0;i<n;i++)
     {
-        tarjan(2,-1,low_link,index,vis,g);
+        if(vis[i])continue;
+        tarjan(i,-1,low_link,index,vis,g);
     }
     for(int i=0;i<edge.size();i++)
     {
-        cout<<edge[i].first<<" "<<edge[i].second<<endl;
+        cout<<"Bridge: "<<edge[i].first<<" - "<<edge[i].second<<endl;
     }
 }
