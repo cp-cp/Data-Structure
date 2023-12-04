@@ -463,3 +463,15 @@ void tarjan(int x)
 
 ### 可持久化线段树
 
+动态开点+每次生根
+
+## Dynamic Programming
+
+Reduce time with memorization.
+
+
+* 3 $\times $ n Problem
+
+用1 $\times$ 2砖块填3 $\times$ n的区域。
+
+ 

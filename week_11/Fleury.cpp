@@ -32,7 +32,6 @@ No Euler Path
 
 */
 
-
 vector<int>degree;
 vector<vector<std::pair<int, int>>> edge;
 vector<int>vis;
