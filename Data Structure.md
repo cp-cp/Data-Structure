@@ -465,7 +465,11 @@ void tarjan(int x)
 
 动态开点+每次生根
 
-## Dynamic Programming
+
+
+## Week_14
+
+### Dynamic Programming
 
 Reduce time with memorization.
 
@@ -475,3 +479,91 @@ Reduce time with memorization.
 用1 $\times$ 2砖块填3 $\times$ n的区域。
 
  
+
+## Week_15
+
+### 二部图
+
+能够把图划分成两个集合，使集合内部无连边。
+
+#### 判断一个图是否为二部图
+
+判断有无**奇圈**。
+
+#### 二分图匹配
+
+* 方法一：转化为网络最大流问题。
+
+![IMG_0203](Data Structure.assets/IMG_0203.jpeg)
+
+设置虚拟**S**ource与**T**arget节点。
+
+网络流性质：任意割，流量相等。
+
+
+
+### 网络流（Flow Network）
+
+#### 网络流具有图结构
+
+* Digraph $G(V,E)$ with source $S$ and sink $T$.
+* Each edge $e$ has the maximum Capacity $w_e$.
+
+#### 最小割等于最大流
+
+首先定义**割**
+
+将一个图$G$的节点集合$V$，划分成两个集合$V_1$,$V_2$，且满足$V=V_1\cup V_2$,$V_1\cap V_2=\empty$。
+
+对于这一种划分，称为一个割。
+
+对于一个$e=(u,v)\in E$，如果满足$u\in V_1,v\in V_2$，则称$e$是一个**割边**，集合称为割边集。
+
+> 做研究需要把问题定义的更加明确，明确问题特殊性，以求利用更多的先验。
+
+定义**流**
+
+等式约束
+
+$\forall v\in V\setminus\{s,t\}:\sum_{u:(u,v)\in E}f_{uv}=\sum_{u:(v,u)\in E}f_{vu}.$
+
+$\forall e \in E,0<f_e<w_e$
+
+#### FF算法
+
+贪婪算法：
+
+``` c++
+E number of edge 
+f(e) flow of edge 
+C(e) capacity of edge 
+
+1) Initialize : max_flow = 0  
+                f(e) = 0 for every edge 'e' in E 
+            
+2) Repeat search for an s-t path P while it exists.   
+   a) Find if there is a path from s to t using BFS
+      or DFS. A path exists if f(e) < C(e) for 
+      every edge e on the path.
+   b) If no path found, return max_flow.
+   c) Else find minimum edge value for path P
+        
+      // Our flow is limited by least remaining
+      // capacity edge on path P.
+      (i) flow = min(C(e)- f(e)) for path P ]
+             max_flow += flow
+      (ii) For all edge e of path increment flow 
+             f(e) += flow
+
+3) Return max_flow 
+```
+
+
+
+
+
+
+
+<img src="Data Structure.assets/下载.jpeg" alt="下载" style="zoom:50%;" />
+
+## The meal looks delicious!
