@@ -31,7 +31,6 @@ int main()
                 swap(middle_id,target_id);
             }
         }
-        // printf("\n");
         printf("plate_id:%d from tower(%d) to tower(%d)\n",res,origin_id,target_id);
     }
 }
